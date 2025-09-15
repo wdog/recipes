@@ -1,0 +1,47 @@
+* {
+font-family: "Roboto Condensed";
+font-size: 15px;
+}
+
+button.activated {
+    background: #f90;
+}
+
+button.minimized {
+    background: #737;
+}
+
+button:hover {
+    background: #737;
+    /*  transition: 500ms ease-in-out; */
+}
+
+/* click with mouse */
+button:active {
+    color: black;
+    background-color: #7dcfff;
+}
+
+button:not(.flat){
+    color: black;
+    background: #7dcfff;
+}
+
+window {
+    box-shadow: rgba(0, 0, 0, 0.288);
+    background-color: rgba(26,27,38,0.9);
+    border-width: 18px;
+    border-color: white;
+}
+
+calendar {
+    border: none;
+    background: none;
+    font-size: 24px;
+    padding:4px;
+}
+
+calendar:selected {
+    background-color: lime;
+    color: black;
+}
