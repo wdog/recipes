@@ -1,0 +1,132 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 30,
+    "modules-left": ["custom/current-ws", "wlr/taskbar"],
+    "modules-center": ["clock#time", "clock#date"],
+    "modules-right": ["mpris", "custom/network", "pulseaudio", "battery", "tray"],
+
+
+    "clock#time": {
+        "format": "🕐 {:%H:%M}",
+        "tooltip": false,
+        "min-length": 8,
+        "max-length": 8
+    },
+    "clock#date": {
+        "format": "📅 {:%m-%d}",
+        "tooltip-format": "<tt>{calendar}</tt>",
+        "calendar": {
+            "mode": "month",
+            "mode-mon-col": 4,
+            "on-click-right": "mode",
+            "format": {
+                "months": "<span color='#b4a0c8'><b>{}</b></span>",
+                "days": "<span color='#d4d4d8'>{}</span>",
+                "weeks": "<span color='#a0c8b4'><b>W{}</b></span>",
+                "weekdays": "<span color='#c8dcb4'><b>{}</b></span>",
+                "today": "<span color='#b4a0c8'><b><u>{}</u></b></span>"
+            }
+        },
+        "actions": {
+            "on-click": "mode",
+            "on-click-right": "mode"
+        },
+        "min-length": 8,
+        "max-length": 8
+    },
+    "wlr/taskbar": {
+        "format": "{icon} {title}",
+        "icon-size": 16,
+        "on-click": "activate",
+        "rewrite": {
+            "^(.{14}).*": "$1"
+        }
+    },
+    "custom/current-ws": {
+        "format": "{}",
+        "exec": "/home/chech/.config/waybar/current-workspace.sh",
+        "return-type": "json",
+        "interval": 1
+    },
+    "mpris": {
+        "format": "{player_icon} {title} - {artist}",
+        "format-paused": "{status_icon} {title} - {artist}",
+        "format-bluetooth": "<span color='#0099ff'></span> {format_source} <span color='#F7347C'>{volume:3}%</span> {icon}",
+        "format-bluetooth-muted": " {format_source} {icon}",
+        "player-icons": {
+            "default": "󰝚 ",
+            "spotify": "<span foreground='#40Ff41'>󰓇 </span>",
+            "firefox": "<span foreground='#f38ba8'>󰗃 </span>"
+        },
+        "status-icons": {
+            "paused": "<span color='#b4befe'>\u200A\u200A󰏤\u2009\u2009</span>"
+        },
+        "tooltip-format": "Playing: {title} - {artist}",
+        "tooltip-format-paused": "Paused: {title} - {artist}",
+        "ignored-players": [
+            "firefox"
+        ],
+        "escape": true,
+        "on-click": "playerctl --player=spotify play-pause",
+        "on-scroll-up": "playerctl --player=spotify previous",
+        "on-scroll-down": "playerctl  --player=spotify next",
+        "min-length": 5,
+        "max-length": 35
+    },
+
+    "custom/network": {
+        "format": "{}",
+        "exec": "/home/chech/.config/waybar/network-format.sh",
+        "interval": 5,
+        "return-type": "text",
+        "on-click": "~/bin/networkmanager_dmenu"
+    },
+
+    "pulseaudio": {
+        "format": "🔊 {volume}% {format_source}",
+        "format-muted": "🔇 0%  {format_source}",
+        "format-source": "🎤 {volume}%",
+        "format-source-muted": "",
+        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+        "on-click-right": "pavucontrol",
+        "on-click-middle": "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+    },
+
+    "battery": {
+        "states": {
+            "good": 60,
+            "warning": 30,
+            "critical": 15
+        },
+        "full-at": 98,
+        "format": "{capacity}% {power}W {icon}",
+        "format-alt": "{time} {icon}",
+        "format-full": "🔋 Full",
+        "format-plugged": "{capacity}% 🔌",
+        "format-charging": "{capacity}% ⚡ {icon}",
+        "format-icons": {
+            "charging": [
+                "󰢜",
+                "󰂆",
+                "󰂇",
+                "󰂈",
+                "󰢝"
+            ],
+            "default": [
+                "󰂎",
+                "󰁺",
+                "󰁻",
+                "󰁼",
+                "󰁽"
+            ]
+        },
+        "tooltip-format": "Discharging: {time}",
+        "tooltip-format-charging": "Charging: {time}",
+        "interval": 1
+    },
+    "tray": {
+        "icon-size": 22,
+        "spacing": 4
+    }
+}

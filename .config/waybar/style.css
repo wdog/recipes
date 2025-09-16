@@ -1,0 +1,174 @@
+* {
+  border: none;
+  border-radius: 0;
+  font-family: "Liberation Sans";
+  font-size: 15px;
+  min-height: 0px;
+}
+
+window#waybar {
+  background-color: rgba(3, 0, 28, 1);
+  color: #d4d4d8;
+}
+
+#clock.time {
+  padding: 0 6px;
+  margin: 1px 2px;
+   background-color: rgba(64, 224, 208, 0.15);
+  color: #40e0d0;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+#clock.date {
+  padding: 0 6px;
+  margin: 1px 2px;
+  background-color: rgba(64, 224, 208, 0.15);
+  color: #40e0d0;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+#custom-current-ws {
+  padding: 0 10px;
+  margin: 1px 2px;
+  background-color: rgba(51, 5, 78, 0.8);
+  border: 1px solid rgb(147, 85, 174);
+  color: #ffffff;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+#taskbar button {
+  padding: 4px 8px;
+  margin: 1px 2px;
+  background-color: rgba(162, 82, 197, 0.2);
+  color: #c693db;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-width: 100px;
+}
+
+#taskbar button:hover {
+  background-color: rgba(147, 85, 174, 0.3);
+}
+
+#taskbar button.active {
+  background-color: rgba(147, 85, 174, 0.8);
+  color: #ffffff;
+  border: 2px solid #b071cb;
+  font-weight: bold;
+}
+
+#taskbar button.minimized {
+  background-color: rgba(88, 91, 112, 0.2);
+  color: #6c7086;
+}
+
+#mpris {
+  padding: 0 6px;
+  margin: 1px 2px;
+  background-color: rgb(115, 8, 117);
+  color: #dcb4a0;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+#mpris.paused {
+  background-color: rgb(52, 1, 43);
+  color: #a6a6a6;
+}
+
+#custom-network {
+  padding: 0 6px;
+  margin: 1px 2px;
+  background-color: rgba(64, 224, 208, 0.15);
+  color: #40e0d0;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+#pulseaudio {
+  padding: 0 6px;
+  margin: 1px 2px;
+  background-color: rgba(64, 224, 208, 0.15);
+  color: #40e0d0;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+#pulseaudio.muted {
+  background-color: rgba(243, 139, 168, 0.2);
+  color: #f38ba8;
+}
+
+#pulseaudio.bluetooth {
+  background-color: rgba(137, 180, 250, 0.2);
+  color: #89b4fa;
+}
+
+#battery {
+  padding: 0 6px;
+  margin: 1px 2px;
+  color: #999900;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+#battery.good {
+  background-color: rgba(77, 77, 0, 0.3);
+  color: #999900;
+}
+
+#battery.warning {
+  background-color: rgba(249, 226, 175, 0.3);
+  color: #f9e2af;
+}
+
+#battery.critical {
+  background-color: rgba(243, 139, 168, 0.3);
+  color: #f38ba8;
+  animation: blink 1s infinite;
+}
+
+#battery.charging {
+  background-color: rgba(137, 180, 250, 0.2);
+  color: #89b4fa;
+}
+
+#battery.plugged {
+  background-color: rgba(64, 224, 208, 0.15);
+  color: #40e0d0;
+}
+
+#battery.full {
+  background-color: rgba(64, 224, 208, 0.15);
+  color: #40e0d0;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+#tray {
+  padding: 0 4px;
+  margin: 1px 2px;
+  background-color: rgba(240, 200, 180, 0.15);
+  color: #f0c8b4;
+  border-radius: 6px;
+}
+
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+  background-color: rgba(243, 139, 168, 0.2);
+}
