@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# ~/bin/wayfire-info-md-simple.py
+# ~/.config/wayfire/scripts/info.py
 # Overlay markdown semplificato senza WebEngine (più stabile)
 
 import sys
