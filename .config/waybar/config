@@ -61,6 +61,7 @@
         },
         "status-icons": {
             "paused": "<span color='#b4befe'>\u200A\u200A󰏤\u2009\u2009</span>"
+            "stopped": "<span color='#b4befe'>\u200A\u200A󰏤󰏤\\u2009\u2009</span>"
         },
         "tooltip-format": "Playing: {title} - {artist}",
         "tooltip-format-paused": "Paused: {title} - {artist}",
