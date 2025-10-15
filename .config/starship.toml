@@ -1,0 +1,117 @@
+format = """
+[](#2C3E50)\
+$os\
+$username\
+$hostname\
+[](bg:#F1C40F fg:#2C3E50)\
+$directory\
+[](fg:#F1C40F bg:#003E50)\
+$git_branch\
+$git_status\
+$git_commit\
+[](fg:#003E50 bg:#F87FF4)\
+$python\
+${custom.docker_compose}\
+$docker_context\
+[](fg:#F87FF4)\
+$line_break\
+$character
+"""
+
+# Set to true to avoid a two-line prompt
+[line_break]
+disabled = false
+
+# Set disabled to true when using a one-line prompt for more aesthetically pleasing results
+[character]
+success_symbol = '[❯](bold green)'
+error_symbol = '[❯](bold red)'
+format = '$symbol '
+disabled = false
+
+# Disable the blank line at the start of the prompt
+#add_newline = false
+
+# You can also replace your username with a neat symbol like  or disable this
+# and use the os module below
+[username]
+show_always = true
+style_user = 'bg:#2C3E50'
+style_root = 'bg:#2C3E50'
+format = '[$user ]($style)'
+disabled = false
+
+[hostname]
+ssh_only = true
+ssh_symbol = '🌐'
+trim_at = '.'
+style = 'bg:#2C3E50'
+format = '[$ssh_symbol $hostname]($style)'
+disabled = false
+
+# An alternative to the username module which displays a symbol that
+# represents the current operating system
+[os]
+style = 'bg:#2C3E50'
+disabled = true  # disabled by default
+
+[directory]
+style = 'bg:#F1C40F fg:#2C3E50'
+format = '[ $path ]($style)'
+truncation_length = 3
+truncation_symbol = "…/"
+truncate_to_repo = false
+
+
+[docker_context]
+symbol = ''
+style = 'bg:#FCA17D fg:#2C3E50'
+format = '[ $symbol $context ]($style) $path'
+
+
+[git_branch]
+symbol = ''
+# symbol = '🌱 '
+style = 'bg:#003E50 fg:#d2d2d2'
+format = '[ $symbol $branch ]($style)'
+
+[git_status]
+style = 'bg:#003E50 fg:#02d2d2'
+format = '[$all_status $ahead_behind ]($style)'
+conflicted = '\($count  \)'
+deleted = '\($count 﫧\)'
+modified = '\($count  \)'
+stashed = '\($count  \)'
+#staged = '  '
+renamed = '\($count  \)'
+untracked = '\($count  \)'
+
+
+
+up_to_date = '✓'
+staged = '[++\($count\)](green)'
+ahead = '⇡${count}'
+diverged = '⇕⇡${ahead_count}⇣${behind_count}'
+behind = '⇣${count}'
+
+[git_commit]
+commit_hash_length = 4
+tag_symbol = '🔖 '
+
+[nodejs]
+symbol = ''
+style = 'bg:#2ECC71 fg:#2C3E50'
+format = '[ $symbol ($version) ]($style)'
+
+[python]
+symbol = '🐍'
+format = '[${symbol} ${pyenv_prefix} (${version} )(\($virtualenv\) )]($style)'
+style = 'bg:#2ECC71 fg:#2C3E50'
+
+
+[custom.docker_compose]
+symbol = ' '
+command = "docker compose ls --format json 2>/dev/null | jq -r '.[0].Name' 2>/dev/null"
+when = "docker compose ls --format json 2>/dev/null | jq -e 'length > 0' >/dev/null 2>&1"
+format = "[[ $symbol$output ](fg:#2C3E50 bg:#F87FF4)]($style)"
+style = 'bg:#F87FF4 fg:#2C3E50'
