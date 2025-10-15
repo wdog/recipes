@@ -62,6 +62,34 @@ truncation_length = 3
 truncation_symbol = "…/"
 truncate_to_repo = false
 
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = "󰇚 "
+"Music" = "󰎆 "
+"Pictures" = "󰉏 "
+"Videos" = "󰕧 "
+"Desktop" = "󰚝 "
+"Projects" = "󱁉 "
+"dev" = "󰲋 "
+"work" = "󰢱 "
+".config" = "󰒓 "
+"~" = "󰋜 "
+"src" = "󰴉 "
+"bin" = "󰘨 "
+"lib" = "󰲂 "
+"tmp" = "󰪺 "
+"scripts" = "󰨞 "
+"tests" = "󰙨 "
+"docs" = "󰈙 "
+"build" = "󰜬 "
+"node_modules" = "󰎙 "
+".git" = "󰊢 "
+".github" = "󰊤 "
+"public" = "󰴾 "
+"assets" = "󰉍 "
+"images" = "󰋩 "
+"fonts" = "󰛖 "
+
 
 [docker_context]
 symbol = ''
