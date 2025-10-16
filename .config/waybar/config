@@ -37,7 +37,8 @@
     },
     "wlr/taskbar": {
         "format": "{icon} {title}",
-        "icon-size": 16,
+        "icon-size": 22,
+        "active-first": true,
         "on-click": "activate",
         "rewrite": {
             "^(.{14}).*": "$1"
