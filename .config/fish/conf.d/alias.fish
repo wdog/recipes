@@ -102,6 +102,10 @@ alias madness 'docker run --rm -it -v $PWD:/docs -p 3000:3000 dannyben/madness s
 
 alias ll 'exa --octal-permissions --header --icons --group --time-style=long-iso --git --group-directories-first -l'
 
+# Starship prompt testing
+alias prompt-tty 'env STARSHIP_CONFIG=~/.config/starship-tty.toml fish'
+alias prompt-fancy 'env STARSHIP_CONFIG=~/.config/starship.toml fish'
+
 # Git
 
 alias gst "git status -s"
