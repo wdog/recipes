@@ -37,8 +37,10 @@
     },
     "wlr/taskbar": {
         "format": "{icon} {title}",
-        "icon-size": 22,
-        "active-first": true,
+        "tooltip-format": "{title}",
+        "on-click-middle": "close",
+        "tooltip": true,
+        "sort-by-app-id": true,
         "on-click": "activate",
         "rewrite": {
             "^(.{14}).*": "$1"
