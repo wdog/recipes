@@ -17,18 +17,20 @@
         "tray"
     ],
     "clock": {
-        "format": "📅 {:%H:%S - %m-%d}",
+        "locale": "it_IT.UTF-8",
+        "format": "📅 {:%H:%M - %A %d}",
+        "format-alt": "📅 {:%A %d %B}",
         "tooltip-format": "<tt>{calendar}</tt>",
         "calendar": {
             "mode": "month",
             "mode-mon-col": 4,
             "on-click-right": "mode",
             "format": {
-                "months": "<span color='#b4a0c8'><b>{}</b></span>",
-                "days": "<span color='#d4d4d8'>{}</span>",
-                "weeks": "<span color='#a0c8b4'><b>W{}</b></span>",
-                "weekdays": "<span color='#c8dcb4'><b>{}</b></span>",
-                "today": "<span color='#b4a0c8'><b><u>{}</u></b></span>"
+                "months": "<span color='#b4befe'><b>{}</b></span>",
+                "days": "<span color='#cdd6f4'>{}</span>",
+                "weeks": "<span color='#a6e3a1'><b>W{}</b></span>",
+                "weekdays": "<span color='#f9e2af'><b>{}</b></span>",
+                "today": "<span background='#a652c5' color='#11111b'><b> {} </b></span>"
             }
         },
         "actions": {
@@ -37,12 +39,14 @@
         }
     },
     "clock#time": {
+        "locale": "it_IT.UTF-8",
         "format": "🕐 {:%H:%M}",
         "tooltip": false,
         "min-length": 8,
         "max-length": 8
     },
     "clock#date": {
+        "locale": "it_IT.UTF-8",
         "format": "📅 {:%m-%d}",
         "tooltip-format": "<tt>{calendar}</tt>",
         "calendar": {
@@ -50,11 +54,11 @@
             "mode-mon-col": 4,
             "on-click-right": "mode",
             "format": {
-                "months": "<span color='#b4a0c8'><b>{}</b></span>",
-                "days": "<span color='#d4d4d8'>{}</span>",
-                "weeks": "<span color='#a0c8b4'><b>W{}</b></span>",
-                "weekdays": "<span color='#c8dcb4'><b>{}</b></span>",
-                "today": "<span color='#b4a0c8'><b><u>{}</u></b></span>"
+                "months": "<span color='#b4befe'><b>{}</b></span>",
+                "days": "<span color='#cdd6f4'>{}</span>",
+                "weeks": "<span color='#a6e3a1'><b>W{}</b></span>",
+                "weekdays": "<span color='#f9e2af'><b>{}</b></span>",
+                "today": "<span background='#a652c5' color='#11111b'><b> {} </b></span>"
             }
         },
         "actions": {
