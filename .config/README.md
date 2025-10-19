@@ -16,3 +16,4 @@ pip install wayfire
 ```bash
 apt install wayfire wcm wf-shell mako wl-paste fuzzel
 ```
+ANOTHER TEST
