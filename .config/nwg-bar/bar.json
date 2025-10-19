@@ -8,5 +8,10 @@
     "label": "Logout",
     "exec": "wayland-logout",
     "icon": "/usr/share/nwg-bar/images/system-log-out.svg"
+  },
+  {
+    "label": "Shutdown",
+    "exec": "sudo shutdown -h now",
+    "icon": "/usr/share/nwg-bar/images/system-shutdown.svg"
   }
 ]

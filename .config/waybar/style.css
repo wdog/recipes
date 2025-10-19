@@ -1,169 +1,189 @@
 @import "theme.css";
 
 * {
-	font-family: "LiterationSans Nerd Font";
-	font-size: 12px;
-	color: @main-fg;
+  /* font-family: "LiterationSans Nerd Font"; */
+  font-size: 13px;
+  color: @text-primary;
 }
 
+/* tooltip styling */
+tooltip {
+  background-color: @bg-medium;
+  border: 1px solid @bg-module;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
 
+tooltip label {
+  color: @text-primary;
+  font-size: 14px;
+}
+
+/* calendar styling */
+calendar {
+  background-color: @bg-medium;
+  border: 1px solid @bg-module;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+calendar:selected {
+  background-color: @accent-purple;
+  border-radius: 6px;
+}
 
 button {
-	border: none;
-	border-radius: 0;
-
+  border: none;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
 }
 
 button:hover {
-	box-shadow: inherit;
-	text-shadow: inherit;
-	background: inherit;
-	color: inherit;
+  box-shadow: inherit;
+  text-shadow: inherit;
+  background: inherit;
+  color: inherit;
 }
 
 /* main outline */
 
 window#waybar {
-	background-color: @main-bg;
+  background-color: @waybar-bg;
 }
 
 #custom-current-ws,
-#taskbar,
+#clock,
 #clock.time,
 #clock.date,
 #mpris,
 #custom-network,
 #pulseaudio,
 #battery,
+#taskbar button,
 #tray {
-	padding: 0 6px;
-	margin: 2px 2px;
-	border-radius: 6px;
-	font-weight: 500;
+  border-radius: 6px;
+  margin: 4px 2px;
+  padding: 0 4px;
+  font-weight: 500;
 }
 
 /* taskbar  */
-
 #taskbar button {
-	opacity: 1;
-	min-width: 100px;
-	background-color: @purple-subtle;
-	color: @purple-custom;
-	border-radius: 6px;
-	margin: 2px 2px;
-	padding: 0 6px;
-	font-weight: 500;
+  opacity: 1;
+  min-width: 100px;
+  background-color: @bg-module;
+  color: @black;
 }
 
-#taskbar button.active {
-	background-color: @purple-custom;
-	color: green;
+#taskbar button.active,
+#taskbar button.active label {
+  background-color: @taskbar-highlight;
+  color: @black;
 }
 
-#taskbar button:hover {
-	background-color: @purple-custom;
-	color: #000000;
+#taskbar button:hover,
+#taskbar button:hover label {
+  transition: none;
+  background-color: @taskbar-highlight;
+  color: @black;
 }
-
 
 /* custom current workspace */
 
 #custom-current-ws {
-	background-color: @purple-custom;
-	color: #000000;
-	padding: 0 10px;
-	font-weight: bold;
+  background-color: @bg-module;
+  color: @accent-purple;
 }
 
 /* clock modules */
 
 #clock.time {
-	background-color: @surface0;
-	color: @blue;
+  background-color: @bg-module;
+  color: @accent-blue;
 }
 
+#clock,
 #clock.date {
-	background-color: @base;
-	color: @lavender;
+  background-color: @bg-module;
+  color: @accent-lavender;
 }
 
 /* mpris (media player) */
 
 #mpris {
-	background-color: @mantle;
-	color: @text;
+  background-color: @bg-medium;
+  color: @accent-purple;
 }
 
 #mpris.paused {
-	color: @overlay0;
+  color: @text-dim;
 }
 
 /* network */
 
 #custom-network {
-	background-color: @network-bg;
-	color: @network-fg;
+  background-color: @bg-module;
+  color: @accent-cyan;
 }
-
 
 /* pulseaudio (volume) */
 
-
 #pulseaudio {
-	background-color: @audio-normal-bg;
-	color: @audio-normal-fg;
+  background-color: @bg-module;
+  color: @accent-teal;
 }
 
 #pulseaudio.muted {
-	background-color: @audio-muted-bg;
-	color: @audio-muted-fg;
+  background-color: @accent-red;
+  color: @accent-red;
 }
 
 #pulseaudio.bluetooth {
-	background-color: @audio-bt-bg;
-	color: @audio-bt-fg;
+  background-color: @bg-module;
+  color: @accent-blue;
 }
 
 /* battery */
 
 #battery {
-	background-color: @surface0;
-	color: @green;
+  background-color: @bg-module;
+  color: @accent-green;
 }
 
 #battery.charging {
-	color: @yellow;
+  color: @accent-yellow;
 }
 
 #battery.warning:not(.charging) {
-	background-color: @peach;
-	color: @crust;
+  background-color: @accent-orange;
+  color: @bg-darkest;
 }
 
 #battery.critical:not(.charging) {
-	background-color: @red;
-	color: @crust;
-	animation: blink 0.5s linear infinite alternate;
+  background-color: @accent-red;
+  color: @bg-darkest;
+  animation: blink 0.5s linear infinite alternate;
 }
 
 @keyframes blink {
-	to {
-		background-color: @base;
-		color: @red;
-	}
+  to {
+    background-color: @bg-dark;
+    color: @accent-red;
+  }
 }
 
 /* tray */
 
 #tray {
-	background-color: @mantle;
+  background-color: @bg-medium;
 }
 
-#tray>.passive {
-	-gtk-icon-effect: dim;
+#tray > .passive {
+  -gtk-icon-effect: dim;
 }
 
-#tray>.needs-attention {
-	-gtk-icon-effect: highlight;
-	background-color: @red;
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+  background-color: @accent-red;
 }

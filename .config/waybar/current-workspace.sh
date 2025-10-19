@@ -22,9 +22,9 @@ def get_current_workspace():
 
                 # If it's a single row (grid_height = 1), just show workspace number with icon
                 if ws.get('grid_height', 1) == 1:
-                    return f"🖥️ {x_display}"
+                    return f"{x_display}"
                 else:
-                    return f"🖥️ {x_display},{y_display}"
+                    return f"{x_display},{y_display}"
 
         return "N/A"
 
@@ -35,6 +35,6 @@ if __name__ == "__main__":
     current = get_current_workspace()
     result = {
         "text": current,
-        "tooltip": f"Current workspace: {current.replace('🖥️ ', '')}"
+        "tooltip": f"Current workspace: {current.replace('', '')}"
     }
     print(json.dumps(result), flush=True)
