@@ -1,17 +1,17 @@
 @import "theme.css";
 
 * {
-  /* font-family: "LiterationSans Nerd Font"; */
+  font-family: "Agave Nerd Font Mono";
   font-size: 15px;
   color: @text-primary;
 }
 
 /* tooltip styling */
 tooltip {
-  background-color: @bg-medium;
+  background-color: @true-blue;
   border: 1px solid @bg-module;
   border-radius: 8px;
-  padding: 8px 12px;
+  /* padding: 8px 12px; */
 }
 
 tooltip label {

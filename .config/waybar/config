@@ -69,12 +69,11 @@
         "max-length": 8
     },
     "wlr/taskbar": {
-        "format": "{icon}",
         "format": "{icon} {title:.14}",
         "on-click-middle": "close",
         "tooltip": true,
          "icon-size": 24,
-        "on-click": "activate",
+        "on-click": "activate"
     },
     "custom/current-ws": {
         "format": "{}",
