@@ -17,4 +17,4 @@ starship init fish | source
 
 
 
-alias claude="$HOME/.claude/local/claude"
+alias claude="~/.claude/local/claude"
