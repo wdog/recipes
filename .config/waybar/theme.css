@@ -22,7 +22,14 @@
 /* other */
 @define-color black					#000000;
 @define-color waybar-bg				rgba(17, 17, 27, 0.1);
-@define-color taskbar-highlight		#9395d9;
+@define-color taskbar-highlight		#F3C6D7;
+@define-color taskbar-base		    #294E97;
 
+/* CSS HEX */
+@define-color true-blue #4668BE;
+@define-color wisteria #AF99C8;
+@define-color polynesian-blue #294E97;
+@define-color fairy-tale #F3C6D7;
+@define-color oxford-blue #092039;
 
 

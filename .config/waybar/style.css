@@ -2,7 +2,7 @@
 
 * {
   /* font-family: "LiterationSans Nerd Font"; */
-  font-size: 13px;
+  font-size: 15px;
   color: @text-primary;
 }
 
@@ -16,7 +16,7 @@ tooltip {
 
 tooltip label {
   color: @text-primary;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 /* calendar styling */
@@ -71,10 +71,11 @@ window#waybar {
 /* taskbar  */
 #taskbar button {
   opacity: 1;
-  min-width: 100px;
-  background-color: @bg-module;
+  /* min-width: 30px; */
+  background-color: @taskbar-base;
   color: @black;
 }
+
 
 #taskbar button.active,
 #taskbar button.active label {
