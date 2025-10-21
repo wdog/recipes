@@ -18,7 +18,7 @@
     ],
     "clock": {
         "locale": "it_IT.UTF-8",
-        "format": "📅 {:%H:%M - %A %d}",
+        "format": "📅 {:%H:%M}",
         "format-alt": "📅 {:%A %d %B}",
         "tooltip-format": "<tt>{calendar}</tt>",
         "calendar": {
@@ -30,7 +30,7 @@
                 "days": "<span color='#cdd6f4'>{}</span>",
                 "weeks": "<span color='#a6e3a1'><b>W{}</b></span>",
                 "weekdays": "<span color='#f9e2af'><b>{}</b></span>",
-                "today": "<span background='#a652c5' color='#11111b'><b> {} </b></span>"
+                "today": "<span background='#c4f40f' color='#030303'><b>{}</b></span>"
             }
         },
         "actions": {
