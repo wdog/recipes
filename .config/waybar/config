@@ -4,7 +4,7 @@
     "height": 30,
     "modules-left": [
         "custom/current-ws",
-        "wlr/taskbar"
+        "wlr/taskbar","wlr/workspace"
     ],
     "modules-center": [
         "clock"
