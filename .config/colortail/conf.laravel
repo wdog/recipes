@@ -1,0 +1,50 @@
+COLOR green
+{
+# matches the date
+^(\[.*\]).*$
+}
+
+COLOR blue
+{
+# INFO
+(.*\.INFO:).*$
+}
+
+COLOR cyan
+{
+# INFO
+(.*\.DEBUG:).*$
+}
+
+COLOR red
+{
+# INFO
+(.*\.CRITICAL:).*$
+}
+
+COLOR blue
+{
+(.*=== .*).*$
+}
+
+COLOR cyan
+{
+(.*== .*).*$
+}
+
+COLOR yellow
+{
+(.*## .*).*$
+}
+
+COLOR red
+{
+# match syslog lines with notice,crit or error level messages
+^#[0-9]{1,3} (.*)$
+}
+
+COLOR cyan
+{
+^(#.*)$
+}
+
