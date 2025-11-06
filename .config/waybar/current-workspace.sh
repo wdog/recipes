@@ -22,9 +22,10 @@ def get_current_workspace():
 
                 # If it's a single row (grid_height = 1), just show workspace number with icon
                 if ws.get('grid_height', 1) == 1:
-                    return f"{x_display}"
+                    return f"🌀 {x_display}"
                 else:
-                    return f"{x_display},{y_display}"
+                    num = x_display + ( ws.get('grid_width',1)  * ( y_display -1 ))
+                    return f"🌀 {num}"
 
         return "N/A"
 

@@ -3,11 +3,11 @@
     "position": "top",
     "height": 30,
     "modules-left": [
+        "clock",
         "custom/current-ws",
-        "wlr/taskbar","wlr/workspace"
+        "wlr/taskbar"
     ],
     "modules-center": [
-        "clock"
     ],
     "modules-right": [
         "mpris",
@@ -69,7 +69,7 @@
         "max-length": 8
     },
     "wlr/taskbar": {
-        "format": "{icon} {title:.14}",
+        "format": "{icon} {title:.10}",
         "on-click-middle": "close",
         "tooltip": true,
          "icon-size": 24,
