@@ -1,25 +1,25 @@
-COLOR green
+COLOR black
 {
 # matches the date
-^(\[.*\]).*$
+^(\[....-..-.. ..:..:..]).*$
 }
 
 COLOR blue
 {
 # INFO
-(.*\.INFO:).*$
+^.*( local\.INFO:).*$
 }
 
 COLOR cyan
 {
 # INFO
-(.*\.DEBUG:).*$
+^.*( local\.DEBUG:).*$
 }
 
 COLOR red
 {
 # INFO
-(.*\.CRITICAL:).*$
+^.*( local\.ERROR: .*)
 }
 
 COLOR blue
