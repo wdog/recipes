@@ -1,0 +1,416 @@
+#!/usr/bin/env bash
+# network-chooser - Advanced network management menu using fuzzel
+# Inspired by networkmanager_dmenu but written from scratch
+
+set -euo pipefail
+
+# Configuration
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/network-chooser"
+CONFIG_FILE="$CONFIG_DIR/config"
+FUZZEL_LINES=20
+FUZZEL_WIDTH=60
+
+# Icons
+ICON_ETHERNET="🔌"
+ICON_VPN_CONNECTED="🔐"
+ICON_VPN_DISCONNECTED="🔓"
+ICON_ACTIVE="🟢"
+ICON_INACTIVE="⚫"
+
+# Load config or use defaults
+[[ -f "$CONFIG_FILE" ]] && source "$CONFIG_FILE"
+
+# Notification wrapper
+send_notification() {
+    local title="$1"
+    local message="$2"
+    local urgency="${3:-normal}"
+    notify-send -u "$urgency" -a "network-chooser" "$title" "$message"
+}
+
+# Test gateway reachability and latency
+test_gateway() {
+    local gateway="$1"
+
+    # Ping test with 1 packet and 1 second timeout
+    if command -v ping &>/dev/null; then
+        local result=$(ping -c 1 -W 1 "$gateway" 2>/dev/null | grep "time=" | sed -E 's/.*time=([0-9.]+).*/\1/')
+
+        if [[ -n "$result" ]]; then
+            local latency=${result%.*} # Get integer part
+            if [[ $latency -lt 10 ]]; then
+                echo "🟢" # Fast (< 10ms)
+            elif [[ $latency -lt 50 ]]; then
+                echo "🟡" # Medium (10-50ms)
+            else
+                echo "🔴" # Slow (> 50ms)
+            fi
+        else
+            echo "⚫" # Unreachable
+        fi
+    else
+        echo "" # No ping available
+    fi
+}
+
+# Test DNS speed and return colored indicator
+test_dns_speed() {
+    local dns_server="$1"
+    local timeout=0.5
+
+    # Quick DNS query test using dig
+    if command -v dig &>/dev/null; then
+        local start=$(date +%s%N)
+        if dig @"$dns_server" google.com +time=1 +tries=1 &>/dev/null; then
+            local end=$(date +%s%N)
+            local latency=$(( (end - start) / 1000000 )) # Convert to milliseconds
+
+            if [[ $latency -lt 50 ]]; then
+                echo "🟢" # Fast (< 50ms)
+            elif [[ $latency -lt 150 ]]; then
+                echo "🟡" # Medium (50-150ms)
+            else
+                echo "🔴" # Slow (> 150ms)
+            fi
+        else
+            echo "⚫" # Failed
+        fi
+    else
+        echo "" # No dig available
+    fi
+}
+
+# Build active connections section
+build_active_section() {
+    local output=""
+    local has_active=0
+
+    # Check active connections
+    while IFS=: read -r name type device state; do
+        has_active=1
+
+        # Get IP addresses, gateway and DNS for this device
+        local ipv4=$(nmcli -t -f IP4.ADDRESS device show "$device" 2>/dev/null | cut -d: -f2 | head -n1)
+        local gateway=$(nmcli -t -f IP4.GATEWAY device show "$device" 2>/dev/null | cut -d: -f2 | head -n1)
+        local ipv6=$(nmcli -t -f IP6.ADDRESS device show "$device" 2>/dev/null | cut -d: -f2 | head -n1)
+        local dns_servers=($(nmcli -t -f IP4.DNS device show "$device" 2>/dev/null | cut -d: -f2))
+
+        # Build DNS line with speed indicators
+        local dns_line=""
+        if [[ ${#dns_servers[@]} -gt 0 ]]; then
+            dns_line="     DNS: "
+            for dns in "${dns_servers[@]}"; do
+                local speed_indicator=$(test_dns_speed "$dns")
+                dns_line+="$speed_indicator $dns  "
+            done
+            dns_line="${dns_line%  }" # Remove trailing spaces
+        fi
+
+        # Test gateway if exists
+        local gateway_line=""
+        if [[ -n "$gateway" ]]; then
+            local gw_status=$(test_gateway "$gateway")
+            gateway_line="     Gateway: $gw_status $gateway"
+        fi
+
+        case "$type" in
+            802-11-wireless)
+                local signal=$(nmcli -t -f IN-USE,SIGNAL dev wifi | grep "^\*" | cut -d: -f2)
+                output+="  🟢 WiFi: $name (${signal:-?}%) on $device\n"
+                [[ -n "$ipv4" ]] && output+="     IPv4: $ipv4\n"
+                [[ -n "$gateway_line" ]] && output+="$gateway_line\n"
+                [[ -n "$ipv6" ]] && output+="     IPv6: $ipv6\n"
+                [[ -n "$dns_line" ]] && output+="$dns_line\n"
+                ;;
+            802-3-ethernet)
+                output+="  🟢 Ethernet: $name on $device\n"
+                [[ -n "$ipv4" ]] && output+="     IPv4: $ipv4\n"
+                [[ -n "$gateway_line" ]] && output+="$gateway_line\n"
+                [[ -n "$ipv6" ]] && output+="     IPv6: $ipv6\n"
+                [[ -n "$dns_line" ]] && output+="$dns_line\n"
+                ;;
+            vpn|wireguard|tun)
+                output+="  🟢 VPN: $name\n"
+                [[ -n "$ipv4" ]] && output+="     IPv4: $ipv4\n"
+                [[ -n "$gateway_line" ]] && output+="$gateway_line\n"
+                [[ -n "$ipv6" ]] && output+="     IPv6: $ipv6\n"
+                [[ -n "$dns_line" ]] && output+="$dns_line\n"
+                ;;
+        esac
+    done < <(nmcli -t -f NAME,TYPE,DEVICE,STATE connection show --active 2>/dev/null)
+
+    if [[ $has_active -eq 0 ]]; then
+        output="  No active connections\n"
+    fi
+
+    echo -e "$output"
+}
+
+# Build WiFi networks section
+build_wifi_section() {
+    local wifi_state=$(nmcli -t -f WIFI general)
+
+    if [[ "$wifi_state" != "enabled" ]]; then
+        echo -e "  WiFi is disabled\n"
+        return
+    fi
+
+    # Parse WiFi networks - use only needed fields to avoid BSSID parsing issues
+    local seen_ssids=()
+    while IFS=: read -r in_use ssid signal security; do
+        # Skip if we've seen this SSID or if empty
+        [[ " ${seen_ssids[*]} " =~ " ${ssid} " ]] && continue
+        [[ -z "$ssid" ]] && continue
+
+        seen_ssids+=("$ssid")
+
+        # Format authentication type
+        local auth_type="$security"
+        [[ "$auth_type" == "--" ]] && auth_type="Open"
+
+        local active_mark="$ICON_INACTIVE"
+        [[ "$in_use" == "*" ]] && active_mark="$ICON_ACTIVE"
+
+        printf "  %s %-35s %3s%%  %s\n" "$active_mark" "$ssid" "$signal" "$auth_type"
+    done < <(nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY dev wifi list 2>/dev/null | sort -t: -k3 -rn)
+}
+
+# Build VPN connections section
+build_vpn_section() {
+    local output=""
+    local has_vpn=0
+
+    # Get all VPN-type connections
+    while IFS=: read -r name type; do
+        has_vpn=1
+        local is_active=0
+
+        # Check if this VPN is active
+        if nmcli -t -f NAME connection show --active 2>/dev/null | grep -qx "$name"; then
+            output+="  🟢 $ICON_VPN_CONNECTED $name [CONNECTED]\n"
+        else
+            output+="  ⚫ $ICON_VPN_DISCONNECTED $name\n"
+        fi
+    done < <(nmcli -t -f NAME,TYPE connection show 2>/dev/null | grep -E ":vpn$|:wireguard$|:tun$")
+
+    if [[ $has_vpn -eq 0 ]]; then
+        output="  No VPN connections configured\n"
+    fi
+
+    echo -e "$output"
+}
+
+# Build Ethernet connections section
+build_ethernet_section() {
+    local output=""
+    local has_eth=0
+
+    while IFS=: read -r name type; do
+        has_eth=1
+
+        if nmcli -t -f NAME connection show --active 2>/dev/null | grep -qx "$name"; then
+            output+="  🟢 $ICON_ETHERNET $name [CONNECTED]\n"
+        else
+            output+="  ⚫ $ICON_ETHERNET $name\n"
+        fi
+    done < <(nmcli -t -f NAME,TYPE connection show 2>/dev/null | grep ":802-3-ethernet$")
+
+    if [[ $has_eth -eq 0 ]]; then
+        return
+    fi
+
+    echo -e "$output"
+}
+
+# Main menu builder
+build_menu() {
+    local menu=""
+
+    menu+="━━━ ACTIVE CONNECTIONS ━━━\n"
+    menu+="$(build_active_section)"
+    menu+="\n"
+
+    local wifi_state=$(nmcli -t -f WIFI general)
+    menu+="━━━ WiFi ━━━\n"
+    if [[ "$wifi_state" == "enabled" ]]; then
+        menu+="  ⛔ Disable WiFi\n"
+        menu+="  🔄 Rescan Networks\n"
+        menu+="\n"
+        menu+="$(build_wifi_section)"
+    else
+        menu+="  ✅ Enable WiFi\n"
+    fi
+    menu+="\n"
+
+    local eth_section=$(build_ethernet_section)
+    if [[ -n "$eth_section" ]]; then
+        menu+="━━━ ETHERNET ━━━\n"
+        menu+="$eth_section"
+        menu+="\n"
+    fi
+
+    menu+="━━━ VPN ━━━\n"
+    menu+="$(build_vpn_section)"
+    menu+="\n"
+
+    menu+="━━━ ACTIONS ━━━\n"
+    menu+="  ❌ Disconnect All\n"
+    menu+="  ⚙️  Connection Settings\n"
+
+    echo -e "$menu"
+}
+
+# Handle WiFi connection
+handle_wifi_connect() {
+    local selection="$1"
+
+    # Extract SSID (between active mark and signal percentage)
+    local ssid=$(echo "$selection" | sed -E 's/^[[:space:]]*[🟢⚫][[:space:]]+([^[:space:]]+.*[^[:space:]]+)[[:space:]]+[0-9]+%.*/\1/' | xargs)
+
+    # Check if already connected
+    if echo "$selection" | grep -q "$ICON_ACTIVE"; then
+        send_notification "WiFi" "Already connected to $ssid"
+        return
+    fi
+
+    # Check if password needed (anything except "Open")
+    local needs_password=0
+    echo "$selection" | grep -qv "Open$" && needs_password=1
+
+    # Check if connection profile exists
+    if nmcli -t -f NAME connection show 2>/dev/null | grep -qx "$ssid"; then
+        # Activate existing connection
+        if nmcli connection up id "$ssid" &>/dev/null; then
+            send_notification "WiFi Connected" "Connected to $ssid"
+        else
+            send_notification "WiFi Error" "Failed to connect to $ssid" "critical"
+        fi
+    else
+        # New connection
+        if [[ $needs_password -eq 1 ]]; then
+            local password=$(echo "" | fuzzel -d -w 40 --password -p "Password for $ssid: " 2>/dev/null)
+            [[ -z "$password" ]] && return
+
+            if nmcli device wifi connect "$ssid" password "$password" &>/dev/null; then
+                send_notification "WiFi Connected" "Connected to $ssid"
+            else
+                send_notification "WiFi Error" "Failed to connect to $ssid" "critical"
+            fi
+        else
+            if nmcli device wifi connect "$ssid" &>/dev/null; then
+                send_notification "WiFi Connected" "Connected to $ssid"
+            else
+                send_notification "WiFi Error" "Failed to connect to $ssid" "critical"
+            fi
+        fi
+    fi
+}
+
+# Handle VPN toggle
+handle_vpn_toggle() {
+    local selection="$1"
+
+    # Extract VPN name
+    local vpn_name=$(echo "$selection" | sed -E 's/^[[:space:]]*[🟢⚫][[:space:]]*[^[:space:]]+[[:space:]]+([^[]+).*/\1/' | xargs)
+
+    if echo "$selection" | grep -q "\[CONNECTED\]"; then
+        # Disconnect
+        if nmcli connection down id "$vpn_name" &>/dev/null; then
+            send_notification "VPN Disconnected" "$vpn_name"
+        else
+            send_notification "VPN Error" "Failed to disconnect $vpn_name" "critical"
+        fi
+    else
+        # Connect
+        if nmcli connection up id "$vpn_name" &>/dev/null; then
+            send_notification "VPN Connected" "$vpn_name"
+        else
+            send_notification "VPN Error" "Failed to connect $vpn_name" "critical"
+        fi
+    fi
+}
+
+# Handle Ethernet toggle
+handle_ethernet_toggle() {
+    local selection="$1"
+
+    # Extract connection name
+    local conn_name=$(echo "$selection" | sed -E 's/^[[:space:]]*[🟢⚫][[:space:]]*[^[:space:]]+[[:space:]]+([^[]+).*/\1/' | xargs)
+
+    if echo "$selection" | grep -q "\[CONNECTED\]"; then
+        if nmcli connection down id "$conn_name" &>/dev/null; then
+            send_notification "Ethernet Disconnected" "$conn_name"
+        fi
+    else
+        if nmcli connection up id "$conn_name" &>/dev/null; then
+            send_notification "Ethernet Connected" "$conn_name"
+        fi
+    fi
+}
+
+# Main loop
+main() {
+    while true; do
+        local selection=$(build_menu | fuzzel -d -w "$FUZZEL_WIDTH" -l "$FUZZEL_LINES" -p "Network: " 2>/dev/null)
+
+        # Exit if nothing selected
+        [[ -z "$selection" ]] && exit 0
+
+        # Handle selection
+        case "$selection" in
+            *"Enable WiFi"*)
+                nmcli radio wifi on
+                send_notification "WiFi" "WiFi enabled"
+                sleep 1
+                nmcli device wifi rescan &>/dev/null || true
+                ;;
+            *"Disable WiFi"*)
+                nmcli radio wifi off
+                send_notification "WiFi" "WiFi disabled"
+                ;;
+            *"Rescan Networks"*)
+                send_notification "WiFi" "Rescanning..."
+                nmcli device wifi rescan &>/dev/null || true
+                sleep 2
+                ;;
+            *"Disconnect All"*)
+                nmcli networking off
+                sleep 1
+                nmcli networking on
+                send_notification "Network" "All connections reset"
+                ;;
+            *"Connection Settings"*)
+                if command -v nm-connection-editor &>/dev/null; then
+                    nm-connection-editor &
+                elif command -v nmtui &>/dev/null; then
+                    ${TERMINAL:-xterm} -e nmtui &
+                fi
+                exit 0
+                ;;
+            *"$ICON_VPN_CONNECTED"*|*"$ICON_VPN_DISCONNECTED"*)
+                handle_vpn_toggle "$selection"
+                ;;
+            *"$ICON_ETHERNET"*)
+                handle_ethernet_toggle "$selection"
+                ;;
+            *"%  WPA"*|*"%  WEP"*|*"%  Open")
+                # WiFi network selection (ends with auth type)
+                handle_wifi_connect "$selection"
+                ;;
+            "━━━"*|*"No active"*|*"No VPN"*|*"WiFi is disabled"*)
+                # Ignore headers and info lines
+                continue
+                ;;
+        esac
+    done
+}
+
+# Check dependencies
+for cmd in nmcli fuzzel notify-send; do
+    if ! command -v "$cmd" &>/dev/null; then
+        echo "Error: $cmd is required but not installed" >&2
+        exit 1
+    fi
+done
+
+main
