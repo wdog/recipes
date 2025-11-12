@@ -100,8 +100,9 @@ build_active_section() {
         if [[ ${#dns_servers[@]} -gt 0 ]]; then
             dns_line="     DNS: "
             for dns in "${dns_servers[@]}"; do
-                local speed_indicator=$(test_dns_speed "$dns")
-                dns_line+="$speed_indicator $dns  "
+                # local speed_indicator=$(test_dns_speed "$dns")
+                # dns_line+="$speed_indicator $dns  "
+                dns_line+="$dns "
             done
             dns_line="${dns_line%  }" # Remove trailing spaces
         fi
@@ -109,8 +110,9 @@ build_active_section() {
         # Test gateway if exists
         local gateway_line=""
         if [[ -n "$gateway" ]]; then
-            local gw_status=$(test_gateway "$gateway")
-            gateway_line="     Gateway: $gw_status $gateway"
+            # local gw_status=$(test_gateway "$gateway")
+            # gateway_line="     Gateway: $gw_status $gateway"
+            gateway_line="     Gateway: $gateway"
         fi
 
         case "$type" in
