@@ -112,7 +112,7 @@
         "exec": "~/.config/waybar/network-format.sh",
         "interval": 5,
         "return-type": "text",
-        "on-click": "~/bin/networkmanager_dmenu"
+        "on-click": "~/bin/network-chooser"
     },
     "pulseaudio": {
         "scroll-step": 2.5,
