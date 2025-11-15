@@ -89,54 +89,24 @@ build_active_section() {
     while IFS=: read -r name type device state; do
         has_active=1
 
-        # Get IP addresses, gateway and DNS for this device
-        local ipv4=$(nmcli -t -f IP4.ADDRESS device show "$device" 2>/dev/null | cut -d: -f2 | head -n1)
-        local gateway=$(nmcli -t -f IP4.GATEWAY device show "$device" 2>/dev/null | cut -d: -f2 | head -n1)
-        local ipv6=$(nmcli -t -f IP6.ADDRESS device show "$device" 2>/dev/null | cut -d: -f2 | head -n1)
-        local dns_servers=($(nmcli -t -f IP4.DNS device show "$device" 2>/dev/null | cut -d: -f2))
-
-        # Build DNS line with speed indicators
-        local dns_line=""
-        if [[ ${#dns_servers[@]} -gt 0 ]]; then
-            dns_line="     DNS: "
-            for dns in "${dns_servers[@]}"; do
-                # local speed_indicator=$(test_dns_speed "$dns")
-                # dns_line+="$speed_indicator $dns  "
-                dns_line+="$dns "
-            done
-            dns_line="${dns_line%  }" # Remove trailing spaces
-        fi
-
-        # Test gateway if exists
-        local gateway_line=""
-        if [[ -n "$gateway" ]]; then
-            # local gw_status=$(test_gateway "$gateway")
-            # gateway_line="     Gateway: $gw_status $gateway"
-            gateway_line="     Gateway: $gateway"
-        fi
+        # Get all device info in ONE call instead of multiple
+        local device_info=$(nmcli -t -f IP4.ADDRESS,IP4.GATEWAY device show "$device" 2>/dev/null)
+        local ipv4=$(echo "$device_info" | grep "^IP4.ADDRESS" | cut -d: -f2 | head -n1)
+        local gateway=$(echo "$device_info" | grep "^IP4.GATEWAY" | cut -d: -f2 | head -n1)
 
         case "$type" in
             802-11-wireless)
                 local signal=$(nmcli -t -f IN-USE,SIGNAL dev wifi | grep "^\*" | cut -d: -f2)
-                output+="  🟢 WiFi: $name (${signal:-?}%) on $device\n"
-                [[ -n "$ipv4" ]] && output+="     IPv4: $ipv4\n"
-                [[ -n "$gateway_line" ]] && output+="$gateway_line\n"
-                [[ -n "$ipv6" ]] && output+="     IPv6: $ipv6\n"
-                [[ -n "$dns_line" ]] && output+="$dns_line\n"
+                output+="  🟢 WiFi: $name (${signal:-?}%)\n"
+                [[ -n "$ipv4" ]] && output+="     $ipv4\n"
                 ;;
             802-3-ethernet)
-                output+="  🟢 Ethernet: $name on $device\n"
-                [[ -n "$ipv4" ]] && output+="     IPv4: $ipv4\n"
-                [[ -n "$gateway_line" ]] && output+="$gateway_line\n"
-                [[ -n "$ipv6" ]] && output+="     IPv6: $ipv6\n"
-                [[ -n "$dns_line" ]] && output+="$dns_line\n"
+                output+="  🟢 Ethernet: $name\n"
+                [[ -n "$ipv4" ]] && output+="     $ipv4\n"
                 ;;
             vpn|wireguard|tun)
                 output+="  🟢 VPN: $name\n"
-                [[ -n "$ipv4" ]] && output+="     IPv4: $ipv4\n"
-                [[ -n "$gateway_line" ]] && output+="$gateway_line\n"
-                [[ -n "$ipv6" ]] && output+="     IPv6: $ipv6\n"
-                [[ -n "$dns_line" ]] && output+="$dns_line\n"
+                [[ -n "$ipv4" ]] && output+="     $ipv4\n"
                 ;;
         esac
     done < <(nmcli -t -f NAME,TYPE,DEVICE,STATE connection show --active 2>/dev/null)
@@ -157,7 +127,7 @@ build_wifi_section() {
         return
     fi
 
-    # Parse WiFi networks - use only needed fields to avoid BSSID parsing issues
+    # Parse WiFi networks - use cached list (--rescan no) for speed
     local seen_ssids=()
     while IFS=: read -r in_use ssid signal security; do
         # Skip if we've seen this SSID or if empty
@@ -174,7 +144,7 @@ build_wifi_section() {
         [[ "$in_use" == "*" ]] && active_mark="$ICON_ACTIVE"
 
         printf "  %s %-35s %3s%%  %s\n" "$active_mark" "$ssid" "$signal" "$auth_type"
-    done < <(nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY dev wifi list 2>/dev/null | sort -t: -k3 -rn)
+    done < <(nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY dev wifi list --rescan no 2>/dev/null | sort -t: -k3 -rn)
 }
 
 # Build VPN connections section
@@ -228,23 +198,68 @@ build_ethernet_section() {
 build_menu() {
     local menu=""
 
+    # Use temp files for parallel execution (subshells can't modify parent variables)
+    local tmp_dir=$(mktemp -d)
+    local tmp_active="$tmp_dir/active"
+    local tmp_wifi="$tmp_dir/wifi"
+    local tmp_vpn="$tmp_dir/vpn"
+    local tmp_eth="$tmp_dir/eth"
+    local tmp_wifi_state="$tmp_dir/wifi_state"
+
+    # Run all sections in parallel for speed
+    {
+        build_active_section > "$tmp_active"
+    } &
+    local pid_active=$!
+
+    {
+        local state=$(nmcli -t -f WIFI general 2>/dev/null || echo "disabled")
+        echo "$state" > "$tmp_wifi_state"
+        if [[ "$state" == "enabled" ]]; then
+            build_wifi_section > "$tmp_wifi"
+        fi
+    } &
+    local pid_wifi=$!
+
+    {
+        build_vpn_section > "$tmp_vpn"
+    } &
+    local pid_vpn=$!
+
+    {
+        build_ethernet_section > "$tmp_eth"
+    } &
+    local pid_eth=$!
+
+    # Wait for all sections to complete
+    wait $pid_active $pid_wifi $pid_vpn $pid_eth
+
+    # Read results from temp files
+    local active_section=$(cat "$tmp_active" 2>/dev/null || echo "")
+    local wifi_section=$(cat "$tmp_wifi" 2>/dev/null || echo "")
+    local vpn_section=$(cat "$tmp_vpn" 2>/dev/null || echo "")
+    local eth_section=$(cat "$tmp_eth" 2>/dev/null || echo "")
+    local wifi_state=$(cat "$tmp_wifi_state" 2>/dev/null || echo "disabled")
+
+    # Cleanup
+    rm -rf "$tmp_dir"
+
+    # Build menu from collected sections
     menu+="━━━ ACTIVE CONNECTIONS ━━━\n"
-    menu+="$(build_active_section)"
+    menu+="$active_section"
     menu+="\n"
 
-    local wifi_state=$(nmcli -t -f WIFI general)
     menu+="━━━ WiFi ━━━\n"
     if [[ "$wifi_state" == "enabled" ]]; then
         menu+="  ⛔ Disable WiFi\n"
         menu+="  🔄 Rescan Networks\n"
         menu+="\n"
-        menu+="$(build_wifi_section)"
+        menu+="$wifi_section"
     else
         menu+="  ✅ Enable WiFi\n"
     fi
     menu+="\n"
 
-    local eth_section=$(build_ethernet_section)
     if [[ -n "$eth_section" ]]; then
         menu+="━━━ ETHERNET ━━━\n"
         menu+="$eth_section"
@@ -252,7 +267,7 @@ build_menu() {
     fi
 
     menu+="━━━ VPN ━━━\n"
-    menu+="$(build_vpn_section)"
+    menu+="$vpn_section"
     menu+="\n"
 
     menu+="━━━ ACTIONS ━━━\n"
