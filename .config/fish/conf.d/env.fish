@@ -1,5 +1,6 @@
 # Env variables needed for wayland and sway
-set -gx XDG_CURRENT_DESKTOP wayfire
+#set -gx XDG_CURRENT_DESKTOP hyprland
+# set -gx XDG_CURRENT_DESKTOP wayfire
 set -gx DENO_INSTALL "/home/$USER/.deno"
 set -gx XDG_CONFIG_HOME ~/.config
 set -gx TERMINAL alacritty

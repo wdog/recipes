@@ -154,6 +154,52 @@ window#waybar {
   animation: blink 0.5s linear infinite alternate;
 }
 
+
+/* HYPRLAND */
+
+#workspaces {
+}
+
+#workspaces button {
+    font-family: "Cantarell";
+    font-weight: bold;
+    background-color: @bg-medium;
+    box-shadow: none;
+    text-shadow: none;
+    padding: 0 2px;
+    margin: 0 2px;
+}
+
+#workspaces .workspace-label {
+    color: #000;
+    background-color: @accent-purple;
+    border-radius: 5px 0 0 5px;
+    border-bottom: 1px solid transparent;
+}
+
+#workspaces .taskbar-window {
+    font-weight: normal;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#workspaces button.visible .taskbar-window,
+#workspaces button.visible .workspace-label {
+    border-color: @accent-purple;
+}
+
+#workspaces .taskbar-window.active {
+    background-color: @accent-purple;
+}
+
+#workspaces .taskbar-window image {
+    margin-top: 1px;
+}
+
+#workspaces button.urgent {
+    background-color: @urgent-color;
+}
+
 @keyframes blink {
   to {
     background-color: @bg-dark;
