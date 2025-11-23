@@ -16,7 +16,7 @@ arguments = ["img", "--transition-type", "center"]
 [templates.hyprland]
 input_path = '~/.config/matugen/templates/hyprland-colors.conf'
 output_path = '~/.config/hypr/colors/colors.conf'
-# post_hook = "hyprland reload"
+post_hook = "hyprctl reload"
 
 [templates.alacritty]
 input_path = '~/.config/matugen/templates/alacritty-colors.toml'
