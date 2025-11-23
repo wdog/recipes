@@ -1,223 +1,101 @@
-@import "theme.css";
+@import "colors.css";
 
 * {
-  font-family: "IosevkaTerm Nerd Font";
-  font-size: 15px;
-  color: @text-primary;
+  border: none;
+  border-radius: 0;
+  font-family: "JetBrainsMono Nerd Font", Helvetica, Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 500;
+  min-height: 0;
 }
 
-/* tooltip styling */
+window#waybar {
+  background: transparent;
+  color: @on_surface;
+}
+
 tooltip {
-  background-color: @oxford-blue;
-  border: 1px solid @bg-module;
+  background: @surface_container_high;
+  border: 1px solid @outline_variant;
   border-radius: 8px;
+  padding: 4px 8px;
 }
 
 tooltip label {
-  color: @text-primary;
-  font-size: 16px;
+  color: @on_surface;
 }
 
-
-button {
-  border: none;
-  border-radius: 0;
-  margin: 0;
-  padding: 0;
-}
-
-button:hover {
-  box-shadow: inherit;
-  text-shadow: inherit;
-  background: inherit;
-  color: inherit;
-}
-
-/* main outline */
-
-window#waybar {
-  background-color: @waybar-bg;
-}
-
-#custom-current-ws,
-#clock,
-#clock.time,
-#clock.date,
-#mpris,
-#custom-network,
-#pulseaudio,
-#battery,
-#taskbar button,
-#tray {
-  border-radius: 6px;
-  margin: 4px 2px;
-  padding: 0 4px;
-  font-weight: 500;
-}
-
-/* taskbar  */
-#taskbar button {
-  opacity: 1;
-  /* min-width: 30px; */
-  background-color: @taskbar-base;
-  color: @black;
-}
-
-
-#taskbar button.active,
-#taskbar button.active label {
-  background-color: @taskbar-highlight;
-  color: @black;
-}
-
-#taskbar button:hover,
-#taskbar button:hover label {
-  transition: none;
-  background-color: @taskbar-highlight;
-  color: @black;
-}
-
-/* custom current workspace */
-
-#custom-current-ws {
-  background-color: @bg-module;
-  color: @accent-purple;
-}
-
-/* clock modules */
-
-#clock.time {
-  background-color: @bg-module;
-  color: @accent-blue;
-}
-
-#clock,
-#clock.date {
-  background-color: @bg-module;
-  color: @accent-lavender;
-}
-
-/* mpris (media player) */
-
-#mpris {
-  background-color: @bg-medium;
-  color: @accent-purple;
-}
-
-#mpris.paused {
-  color: @text-dim;
-}
-
-/* network */
-
-#custom-network {
-  background-color: @bg-module;
-  color: @accent-cyan;
-}
-
-/* pulseaudio (volume) */
-
-#pulseaudio {
-  background-color: @bg-module;
-  color: @accent-teal;
-}
-
-#pulseaudio.muted {
-  background-color: @accent-red;
-  color: @accent-red;
-}
-
-#pulseaudio.bluetooth {
-  background-color: @bg-module;
-  color: @accent-blue;
-}
-
-/* battery */
-
-#battery {
-  background-color: @bg-module;
-  color: @accent-green;
-}
-
-#battery.charging {
-  color: @accent-yellow;
-}
-
-#battery.warning:not(.charging) {
-  background-color: @accent-orange;
-  color: @bg-darkest;
-}
-
-#battery.critical:not(.charging) {
-  background-color: @accent-red;
-  color: @bg-darkest;
-  animation: blink 0.5s linear infinite alternate;
-}
-
-
-/* HYPRLAND */
-
+/* === WORKSPACES === */
 #workspaces {
+  background-color: @surface_container;
+  color: @on_surface;
+  margin: 5px;
+  border-radius: 12px;
+  padding: 2px 4px;
 }
 
 #workspaces button {
-    font-family: "Cantarell";
-    font-weight: bold;
-    background-color: @bg-medium;
-    box-shadow: none;
-    text-shadow: none;
-    padding: 0 2px;
-    margin: 0 2px;
+  margin: 2px;
+  padding: 0 8px;
+  color: @outline;
+  background-color: transparent;
+  border-radius: 8px;
+  border: none;
 }
 
-#workspaces .workspace-label {
-    color: #000;
-    background-color: @accent-purple;
-    border-radius: 5px 0 0 5px;
-    border-bottom: 1px solid transparent;
-}
-
-#workspaces .taskbar-window {
-    font-weight: normal;
-    padding-left: 5px;
-    padding-right: 5px;
-}
-
-#workspaces button.visible .taskbar-window,
-#workspaces button.visible .workspace-label {
-    border-color: @accent-purple;
-}
-
-#workspaces .taskbar-window.active {
-    background-color: @accent-purple;
-}
-
-#workspaces .taskbar-window image {
-    margin-top: 1px;
+#workspaces button.active {
+  background: @secondary_container;
+  color: @on_secondary_container;
 }
 
 #workspaces button.urgent {
-    background-color: @urgent-color;
+  background: @error_container;
+  color: @on_error_container;
 }
 
-@keyframes blink {
-  to {
-    background-color: @bg-dark;
-    color: @accent-red;
-  }
+#workspaces button:hover {
+  background: @surface_variant;
+  color: @on_surface;
+  transition: all 0.3s cubic-bezier(0.55, -0.68, 0.48, 1.682);
 }
 
-/* tray */
+/* === WIDGETS === */
+#clock,
+#battery,
+#network,
+#mpris,
+#pulseaudio,
+#tray {
+  padding: 4px 12px;
+  margin: 5px 2px;
+  border-radius: 10px;
+  background-color: @surface_container;
+  color: @on_surface_variant;
+}
+
+#mpris {
+  color: @secondary;
+}
+
+#clock {
+  background-color: @secondary_container;
+  color: @on_secondary_container;
+  font-weight: 600;
+}
+
+#battery {
+  color: @secondary;
+}
+
+#network {
+  color: @secondary;
+}
+
+#pulseaudio {
+  color: @secondary;
+}
 
 #tray {
-  background-color: @bg-medium;
-}
-
-#tray > .passive {
-  -gtk-icon-effect: dim;
-}
-
-#tray > .needs-attention {
-  -gtk-icon-effect: highlight;
-  background-color: @accent-red;
+  padding: 4px 10px;
+  color: @on_surface;
 }
