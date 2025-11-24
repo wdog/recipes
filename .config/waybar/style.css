@@ -3,7 +3,7 @@
 * {
   border: none;
   border-radius: 0;
-  font-family: "JetBrainsMono Nerd Font Mono" , Helvetica, Arial, sans-serif;
+  font-family: "JetBrainsMono Nerd Font Mono", Helvetica, Arial, sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   min-height: 0;
@@ -27,7 +27,7 @@ tooltip label {
 
 /* === WORKSPACES === */
 #workspaces {
-  background-color: @surface_container;
+  /*  background-color: @surface_container; */
   color: @on_surface;
   margin: 5px;
   border-radius: 12px;
@@ -55,6 +55,7 @@ tooltip label {
 #workspaces button:hover {
   background: @surface_variant;
   color: @on_surface;
+  box-shadow: 0 0 2px 2px alpha(@primary, 0.6);
   transition: all 0.3s cubic-bezier(0.55, -0.68, 0.48, 1.682);
 }
 
