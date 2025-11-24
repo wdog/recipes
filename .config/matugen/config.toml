@@ -31,6 +31,7 @@ post_hook = "~/.config/waybar/launch.sh"
 input_path = '~/.config/matugen/templates/fuzzel-colors.ini'
 output_path = '~/.config/fuzzel/colors.ini'
 
-
-
-post_hook = "~/.config/waybar/launch.sh"
+[templates.mako]
+input_path = '~/.config/matugen/templates/mako-colors.ini'
+output_path = '~/.config/mako/colors.ini'
+post_hook = 'makoctl reload'

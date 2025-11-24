@@ -1,9 +1,8 @@
 # Mako notification daemon configuration
+# mutagen generated colors
+include=~/.config/mako/colors.ini
 
 # Theme and appearance
-background-color=#2b2b2b
-text-color=#ffffff
-border-color=#444444
 border-size=2
 border-radius=5
 font=Sans 13
@@ -19,19 +18,12 @@ default-timeout=1000
 # Low priority notifications timeout (500ms)
 [urgency=low]
 default-timeout=1000
-background-color=#2d3142
-border-color=#4f5b66
 
 # Critical/urgent notifications (never timeout)
 [urgency=critical]
 default-timeout=0
-background-color=#bf616a
-text-color=#ffffff
-border-color=#d08770
 
 # High priority notifications (same as normal for now)
 [urgency=high]
 default-timeout=2000
-background-color=#d08770
-text-color=#2b2b2b
-border-color=#ebcb8b
+

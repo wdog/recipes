@@ -22,8 +22,8 @@
         "workspace-taskbar": {
             "enable": true,
             "format": "{icon}",
-            "icon-size": 18,
-            "on-click-window": "~/.config/hypr/focus-window.sh {address} {button}"
+            "icon-size": 24,
+            "on-click-window": "~/.config/waybar/scripts/focus-window.sh {address} {button}"
         }
     },
     // CLOCK
