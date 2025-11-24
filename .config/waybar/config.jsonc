@@ -1,10 +1,10 @@
 {
     "layer": "top",
     "modules-left": [
-        "hyprland/workspaces"
+        "clock"
     ],
     "modules-center": [
-        "clock"
+        "hyprland/workspaces"
     ],
     "modules-right": [
         "mpris",
@@ -13,12 +13,11 @@
         "network",
         "tray"
     ],
-
     // HYPRLAND WORKSPACES
     "hyprland/workspaces": {
         "format": "{icon} {windows}",
         "format-window-separator": " | ",
-        "all-outputs":  true,
+        "all-outputs": true,
         "workspace-taskbar": {
             "enable": true,
             "format": "{icon}",
@@ -29,8 +28,8 @@
     // CLOCK
     "clock": {
         "locale": "it_IT.UTF-8",
-        "format": "📅 {:%H:%M}",
-        "format-alt": "📅 {:%A %d %B}",
+        "format": " {:%H:%M}",
+        "format-alt": " {:%A %d %B}",
         "tooltip-format": "<tt>{calendar}</tt>",
         "calendar": {
             "mode": "month",
@@ -52,9 +51,9 @@
     // PULSEAUDIO
     "pulseaudio": {
         "scroll-step": 2.5,
-        "format": "🔊 {volume}% {format_source}",
-        "format-muted": "🔇 0%  {format_source}",
-        "format-source": "🎤 {volume}%",
+        "format": "  {volume}% {format_source}",
+        "format-muted": "  0%  {format_source}",
+        "format-source": " {volume}%",
         "format-source-muted": "",
         "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
         "on-click-right": "pavucontrol",
@@ -62,14 +61,13 @@
     },
     // NETWORK
     "network": {
-        "interface": "wlp0s20f3",
         "format": "{ifname}",
-        "format-wifi": "{essid} ({signalStrength}%) ",
+        "format-wifi": "{essid} ({signalStrength}%) ",
         "format-ethernet": "{ipaddr}/{cidr} 󰊗",
         "format-disconnected": "", //An empty format will hide the module.
         "tooltip-format": "{ifname} via {gwaddr} 󰊗",
-        "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
-        "tooltip-format-ethernet": "{ifname} ",
+        "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
+        "tooltip-format-ethernet": "{ifname} ",
         "tooltip-format-disconnected": "Disconnected",
         "max-length": 50
     },
@@ -88,20 +86,21 @@
         ],
         "player-icons": {
             "default": "",
-            "spotify": " ",
-            "mpv": " "
+            "spotify": "",
+            "mpv": ""
         },
         "status-icons": {
-            "paused": "⏸",
-            "playing": "▶"
+            "paused": "",
+            "playing": ""
         }
     },
     // BATTERY
     "battery": {
-        "format": "{capacity}% {icon}",
-        "format-discharging": "{icon}",
-        "format-charging": "{icon}",
-        "format-plugged": "",
+        // "full-at": 98,
+        // "format": "{capacity}% {icon}",
+        "format-discharging": " {capacity}% {icon}",
+        "format-charging": " {percentage}% {icon}",
+        "format-plugged": " {capacity} {icon}",
         "format-icons": {
             "charging": [
                 "󰢜",
@@ -128,7 +127,7 @@
                 "󰁹"
             ]
         },
-        "format-full": "󰂅",
+        "format-full": "󰁹 100%",
         "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
         "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
         "interval": 5,
@@ -136,10 +135,15 @@
         "states": {
             "warning": 20,
             "critical": 10
+        },
+        "events": {
+            "on-discharging-warning": "notify-send -u normal 'Low Battery'",
+            "on-discharging-critical": "notify-send -u critical 'Very Low Battery'",
+            "on-charging-100": "notify-send -u normal 'Battery Full!'"
         }
     },
     "tray": {
-        "icon-size": 22,
+        "icon-size": 24,
         "spacing": 4
     }
 }

@@ -3,9 +3,8 @@
 * {
   border: none;
   border-radius: 0;
-  font-family: "JetBrainsMono Nerd Font Mono", Helvetica, Arial, sans-serif;
+  font-family: "JetBrainsMono NF", Helvetica, Arial, sans-serif;
   font-size: 0.75rem;
-  font-weight: 500;
   min-height: 0;
 }
 
@@ -24,7 +23,6 @@ tooltip {
 tooltip label {
   color: @on_surface;
 }
-
 /* === WORKSPACES === */
 #workspaces {
   margin: 5px 2px;
@@ -70,7 +68,6 @@ tooltip label {
     opacity: 1;
   }
 }
-
 /* === WIDGETS === */
 #clock,
 #battery,
@@ -81,39 +78,27 @@ tooltip label {
   padding: 4px 12px;
   margin: 5px 2px;
   border-radius: 10px;
-  background-color: @surface_container;
-  color: @on_surface_variant;
-}
-
-#mpris {
-  color: @secondary;
-}
-
-#clock {
-  background-color: @secondary_container;
-  color: @on_secondary_container;
-  font-weight: 600;
-}
-
-#battery {
-  color: @secondary;
-}
-
-#network {
-  color: @secondary;
-}
-
-#pulseaudio {
-  color: @secondary;
-}
-
-#mpris {
   color: @background;
   background: @primary;
   border: 1px solid @background;
 }
 
+
+#clock {
+  font-weight: 800;
+}
+
+#battery {}
+
+#network {}
+
+#pulseaudio {}
+
+#mpris {
+}
+
 #tray {
   padding: 4px 10px;
-  color: @on_surface;
+  background-color: @secondary_container;
+  color: @source_color;
 }
