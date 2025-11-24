@@ -13,6 +13,7 @@
         "network",
         "tray"
     ],
+
     // HYPRLAND WORKSPACES
     "hyprland/workspaces": {
         "format": "{icon} {windows}",
