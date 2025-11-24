@@ -59,6 +59,7 @@ tooltip label {
   transition: all 0.3s cubic-bezier(0.55, -0.68, 0.48, 1.682);
 }
 
+
 /* === WIDGETS === */
 #clock,
 #battery,
