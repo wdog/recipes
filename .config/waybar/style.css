@@ -3,7 +3,7 @@
 * {
   border: none;
   border-radius: 0;
-  font-family: "JetBrainsMono Nerd Font", Helvetica, Arial, sans-serif;
+  font-family: "JetBrainsMono Nerd Font Mono" , Helvetica, Arial, sans-serif;
   font-size: 0.75rem;
   font-weight: 500;
   min-height: 0;
@@ -37,8 +37,6 @@ tooltip label {
 #workspaces button {
   margin: 2px;
   padding: 0 8px;
-  color: @outline;
-  background-color: transparent;
   border-radius: 8px;
   border: none;
 }
@@ -46,6 +44,7 @@ tooltip label {
 #workspaces button.active {
   background: @secondary_container;
   color: @on_secondary_container;
+  box-shadow: 0 0 2px 2px alpha(@primary, 0.6);
 }
 
 #workspaces button.urgent {
