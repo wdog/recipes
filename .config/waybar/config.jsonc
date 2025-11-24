@@ -73,14 +73,15 @@
     },
     // MPRIS
     "mpris": {
-        "format": "{player_icon} {status_icon} <i>{artist} - {title}</i>",
+        "format": "{player_icon} {status_icon} <i>{title}</i>",
+        "tooltip-format": "ARTIST:   {artist}\nTITLE:    {title}\nALBUM:    {album}\nDURATION: {length}",
         "player": "playerctld",
         "max-length": 50,
         "on-click": "playerctl play-pause",
         "on-scroll-up": "playerctl next",
         "on-scroll-down": "playerctl previous",
         "return-type": "json",
-        "format-paused": "{player_icon} {status_icon} {artist} - {title}",
+        "format-paused": "{player_icon} {status_icon} {title}",
         "ignored-players": [
             "firefox"
         ],
