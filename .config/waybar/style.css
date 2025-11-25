@@ -30,21 +30,26 @@ tooltip label {
 }
 
 #workspaces button {
-  padding: 4px 10px;
+  padding: 0px 8px;
   margin: 0 4px;
   border-radius: 10px;
   background-color: @on_primary;
   color: @primary;
   transition: all 0.3s ease;
   border: 1px solid @primary;
-  box-shadow: 0 0 2px alpha(@primary, 0.6), 0 0 2px alpha(@primary, 0.4),0 0 30px alpha(@primary, 0.2);
+  /* box-shadow: 0 0 2px alpha(@primary, 0.6), 0 0 2px alpha(@primary, 0.4),0 0 30px alpha(@primary, 0.2); */
 }
 
 #workspaces button.active {
   background-color: @primary;
   color: @background;
   border: 1px solid @background;
-  box-shadow: 0 0 2px alpha(@background, 0.6), 0 0 2px alpha(@background, 0.4),0 0 30px alpha(@background, 0.2);
+   box-shadow:
+    0 0 1px alpha(@primary,0.2),
+    0 0 3px alpha(@primary,0.4),
+    0 0 4px alpha(@primary,0.6);
+
+
   font-weight: 800;
 }
 
@@ -104,5 +109,5 @@ tooltip label {
   padding: 4px 10px;
   background-color: @primary_container;
   border: 1px solid @primary;
-  box-shadow: 0 0 2px alpha(@primary, 0.6), 0 0 2px alpha(@primary, 0.4),0 0 30px alpha(@primary, 0.2);
+  /* box-shadow: 0 0 2px alpha(@primary, 0.6), 0 0 2px alpha(@primary, 0.4),0 0 30px alpha(@primary, 0.2); */
 }
