@@ -23,6 +23,7 @@ tooltip {
 tooltip label {
   color: @on_surface;
 }
+
 /* === WORKSPACES === */
 #workspaces {
   margin: 5px 2px;
@@ -36,16 +37,14 @@ tooltip label {
   color: @primary;
   transition: all 0.3s ease;
   border: 1px solid @primary;
-  box-shadow: 0 0 2px alpha(@primary, 0.6), 0 0 2px alpha(@primary, 0.4), 0 0 30px alpha(@primary, 0.2);
+  box-shadow: 0 0 2px alpha(@primary, 0.6), 0 0 2px alpha(@primary, 0.4),0 0 30px alpha(@primary, 0.2);
 }
-
-
 
 #workspaces button.active {
   background-color: @primary;
   color: @background;
   border: 1px solid @background;
-  box-shadow: 0 0 2px alpha(@background, 0.6), 0 0 2px alpha(@background, 0.4), 0 0 30px alpha(@background, 0.2);
+  box-shadow: 0 0 2px alpha(@background, 0.6), 0 0 2px alpha(@background, 0.4),0 0 30px alpha(@background, 0.2);
   font-weight: 800;
 }
 
@@ -59,13 +58,16 @@ tooltip label {
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.6;
   }
+
   100% {
     opacity: 1;
   }
 }
+
 /* === WIDGETS === */
 #clock,
 #battery,
@@ -81,16 +83,18 @@ tooltip label {
   border: 1px solid @background;
 }
 
-
 #clock {
   font-weight: 800;
 }
 
-#battery {}
+#battery {
+}
 
-#network {}
+#network {
+}
 
-#pulseaudio {}
+#pulseaudio {
+}
 
 #mpris {
   font-weight: 600;
@@ -98,6 +102,7 @@ tooltip label {
 
 #tray {
   padding: 4px 10px;
-  background-color: @secondary_container;
-  color: @source_color;
+  background-color: @primary_container;
+  border: 1px solid @primary;
+  box-shadow: 0 0 2px alpha(@primary, 0.6), 0 0 2px alpha(@primary, 0.4),0 0 30px alpha(@primary, 0.2);
 }

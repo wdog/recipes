@@ -21,6 +21,7 @@
         "workspace-taskbar": {
             "enable": true,
             "format": "{icon}",
+            // "icon-theme": "Simplexx",
             "icon-size": 24,
             "on-click-window": "~/.config/waybar/scripts/focus-window.sh {address} {button}"
         }
@@ -61,15 +62,36 @@
     },
     // NETWORK
     "network": {
+        "interval": 5,
         "format": "{ifname}",
-        "format-wifi": "{essid} ({signalStrength}%) ",
-        "format-ethernet": "{ipaddr}/{cidr} 󰊗",
-        "format-disconnected": "", //An empty format will hide the module.
-        "tooltip-format": "{ifname} via {gwaddr} 󰊗",
-        "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
-        "tooltip-format-ethernet": "{ifname} ",
-        "tooltip-format-disconnected": "Disconnected",
-        "max-length": 50
+        "format-wifi": "{icon} {essid} {signalStrength}%",
+        "format-ethernet": "󰈀 {ipaddr}",
+        "format-linked": "󰈁 {ifname}",
+        "format-disconnected": "󰌙 Disconnected",
+        "format-alt": "{icon} {bandwidthDownBytes}  {bandwidthUpBytes}",
+        "format-icons": {
+            "wifi": [
+                "󰤯",
+                "󰤟",
+                "󰤢",
+                "󰤥",
+                "󰤨"
+            ],
+            "ethernet": "󰈀",
+            "disconnected": "󰌙"
+        },
+        "tooltip-format": "{ifname} via {gwaddr}",
+        "tooltip-format-wifi": "󰖩 {essid}\nSignal: {signalStrength}% ({signaldBm} dBm)\nFrequency: {frequency} MHz\nIP: {ipaddr}/{cidr}\nGateway: {gwaddr}",
+        "tooltip-format-ethernet": "󰈀 {ifname}\nIP: {ipaddr}/{cidr}\nGateway: {gwaddr}",
+        "tooltip-format-disconnected": "󰌙 Disconnected",
+        "max-length": 50,
+        "on-right-click": "~/bin/network-chooser",
+        "interface-blacklist": [
+            "tun*",
+            "tap*",
+            "wg*",
+            "tailscale*"
+        ]
     },
     // MPRIS
     "mpris": {
@@ -145,6 +167,12 @@
     },
     "tray": {
         "icon-size": 24,
-        "spacing": 4
+        "spacing": 4,
+        "icons": {
+            "TelegramDesktop": "telegram",
+            "spotify-client": "spotify",
+            "nm-applet": "network",
+            "blueman": "bluetooth"
+        }
     }
 }

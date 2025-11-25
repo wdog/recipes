@@ -28,60 +28,13 @@ send_notification() {
     notify-send -u "$urgency" -a "network-chooser" "$title" "$message"
 }
 
-# Test gateway reachability and latency
-test_gateway() {
-    local gateway="$1"
-
-    # Ping test with 1 packet and 1 second timeout
-    if command -v ping &>/dev/null; then
-        local result=$(ping -c 1 -W 1 "$gateway" 2>/dev/null | grep "time=" | sed -E 's/.*time=([0-9.]+).*/\1/')
-
-        if [[ -n "$result" ]]; then
-            local latency=${result%.*} # Get integer part
-            if [[ $latency -lt 10 ]]; then
-                echo "🟢" # Fast (< 10ms)
-            elif [[ $latency -lt 50 ]]; then
-                echo "🟡" # Medium (10-50ms)
-            else
-                echo "🔴" # Slow (> 50ms)
-            fi
-        else
-            echo "⚫" # Unreachable
-        fi
-    else
-        echo "" # No ping available
-    fi
-}
-
-# Test DNS speed and return colored indicator
-test_dns_speed() {
-    local dns_server="$1"
-    local timeout=0.5
-
-    # Quick DNS query test using dig
-    if command -v dig &>/dev/null; then
-        local start=$(date +%s%N)
-        if dig @"$dns_server" google.com +time=1 +tries=1 &>/dev/null; then
-            local end=$(date +%s%N)
-            local latency=$(( (end - start) / 1000000 )) # Convert to milliseconds
-
-            if [[ $latency -lt 50 ]]; then
-                echo "🟢" # Fast (< 50ms)
-            elif [[ $latency -lt 150 ]]; then
-                echo "🟡" # Medium (50-150ms)
-            else
-                echo "🔴" # Slow (> 150ms)
-            fi
-        else
-            echo "⚫" # Failed
-        fi
-    else
-        echo "" # No dig available
-    fi
-}
+# Removed unused test_gateway() and test_dns_speed() functions for performance
 
 # Build active connections section
 build_active_section() {
+    local active_conns="$1"
+    local wifi_signal="$2"
+    local device_ips="$3"
     local output=""
     local has_active=0
 
@@ -89,27 +42,27 @@ build_active_section() {
     while IFS=: read -r name type device state; do
         has_active=1
 
-        # Get all device info in ONE call instead of multiple
-        local device_info=$(nmcli -t -f IP4.ADDRESS,IP4.GATEWAY device show "$device" 2>/dev/null)
-        local ipv4=$(echo "$device_info" | grep "^IP4.ADDRESS" | cut -d: -f2 | head -n1)
-        local gateway=$(echo "$device_info" | grep "^IP4.GATEWAY" | cut -d: -f2 | head -n1)
+        # Extract IP for this device from cached data
+        local ip=""
+        if [[ -n "$device" ]]; then
+            ip=$(grep "^$device:" <<< "$device_ips" | cut -d: -f2 | head -n1)
+        fi
 
         case "$type" in
             802-11-wireless)
-                local signal=$(nmcli -t -f IN-USE,SIGNAL dev wifi | grep "^\*" | cut -d: -f2)
-                output+="  🟢 WiFi: $name (${signal:-?}%)\n"
-                [[ -n "$ipv4" ]] && output+="     $ipv4\n"
+                output+="  🟢 WiFi: $name (${wifi_signal:-?}%)"
+                [[ -n "$ip" ]] && output+=" - $ip\n"
                 ;;
             802-3-ethernet)
-                output+="  🟢 Ethernet: $name\n"
-                [[ -n "$ipv4" ]] && output+="     $ipv4\n"
+                output+="  🟢 Ethernet: $name"
+                [[ -n "$ip" ]] && output+=" - $ip\n"
                 ;;
             vpn|wireguard|tun)
-                output+="  🟢 VPN: $name\n"
-                [[ -n "$ipv4" ]] && output+="     $ipv4\n"
+                output+="  🟢 VPN: $name"
+                [[ -n "$ip" ]] && output+=" - $ip\n"
                 ;;
         esac
-    done < <(nmcli -t -f NAME,TYPE,DEVICE,STATE connection show --active 2>/dev/null)
+    done <<< "$active_conns"
 
     if [[ $has_active -eq 0 ]]; then
         output="  No active connections\n"
@@ -120,14 +73,9 @@ build_active_section() {
 
 # Build WiFi networks section
 build_wifi_section() {
-    local wifi_state=$(nmcli -t -f WIFI general)
+    local wifi_list="$1"
 
-    if [[ "$wifi_state" != "enabled" ]]; then
-        echo -e "  WiFi is disabled\n"
-        return
-    fi
-
-    # Parse WiFi networks - use cached list (--rescan no) for speed
+    # Parse WiFi networks - already sorted by signal
     local seen_ssids=()
     while IFS=: read -r in_use ssid signal security; do
         # Skip if we've seen this SSID or if empty
@@ -141,29 +89,34 @@ build_wifi_section() {
         [[ "$auth_type" == "--" ]] && auth_type="Open"
 
         local active_mark="$ICON_INACTIVE"
-        [[ "$in_use" == "*" ]] && active_mark="$ICON_ACTIVE"
+        local status=""
+        if [[ "$in_use" == "*" ]]; then
+            active_mark="$ICON_ACTIVE"
+            status=" [C]"
+        fi
 
-        printf "  %s %-35s %3s%%  %s\n" "$active_mark" "$ssid" "$signal" "$auth_type"
-    done < <(nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY dev wifi list --rescan no 2>/dev/null | sort -t: -k3 -rn)
+        printf "  %s %-35s %3s%%  %-10s%s\n" "$active_mark" "$ssid" "$signal" "$auth_type" "$status"
+    done <<< "$wifi_list"
 }
 
 # Build VPN connections section
 build_vpn_section() {
+    local all_conns="$1"
+    local active_names="$2"
     local output=""
     local has_vpn=0
 
     # Get all VPN-type connections
     while IFS=: read -r name type; do
         has_vpn=1
-        local is_active=0
 
-        # Check if this VPN is active
-        if nmcli -t -f NAME connection show --active 2>/dev/null | grep -qx "$name"; then
-            output+="  🟢 $ICON_VPN_CONNECTED $name [CONNECTED]\n"
+        # Check if this VPN is active using cached data
+        if grep -qx "$name" <<< "$active_names"; then
+            output+="  🟢 $ICON_VPN_CONNECTED $name [C]\n"
         else
             output+="  ⚫ $ICON_VPN_DISCONNECTED $name\n"
         fi
-    done < <(nmcli -t -f NAME,TYPE connection show 2>/dev/null | grep -E ":vpn$|:wireguard$|:tun$")
+    done <<< "$(grep -E ":vpn$|:wireguard$|:tun$" <<< "$all_conns")"
 
     if [[ $has_vpn -eq 0 ]]; then
         output="  No VPN connections configured\n"
@@ -174,18 +127,21 @@ build_vpn_section() {
 
 # Build Ethernet connections section
 build_ethernet_section() {
+    local all_conns="$1"
+    local active_names="$2"
     local output=""
     local has_eth=0
 
     while IFS=: read -r name type; do
         has_eth=1
 
-        if nmcli -t -f NAME connection show --active 2>/dev/null | grep -qx "$name"; then
-            output+="  🟢 $ICON_ETHERNET $name [CONNECTED]\n"
+        # Check if this connection is active using cached data
+        if grep -qx "$name" <<< "$active_names"; then
+            output+="  🟢 $ICON_ETHERNET $name [C]\n"
         else
             output+="  ⚫ $ICON_ETHERNET $name\n"
         fi
-    done < <(nmcli -t -f NAME,TYPE connection show 2>/dev/null | grep ":802-3-ethernet$")
+    done <<< "$(grep ":802-3-ethernet$" <<< "$all_conns")"
 
     if [[ $has_eth -eq 0 ]]; then
         return
@@ -197,49 +153,74 @@ build_ethernet_section() {
 # Main menu builder
 build_menu() {
     local menu=""
-
-    # Use temp files for parallel execution (subshells can't modify parent variables)
     local tmp_dir=$(mktemp -d)
-    local tmp_active="$tmp_dir/active"
-    local tmp_wifi="$tmp_dir/wifi"
-    local tmp_vpn="$tmp_dir/vpn"
-    local tmp_eth="$tmp_dir/eth"
-    local tmp_wifi_state="$tmp_dir/wifi_state"
 
-    # Run all sections in parallel for speed
+    # Cache ALL nmcli calls at once - this is the KEY optimization
+    local tmp_all_conns="$tmp_dir/all_conns"
+    local tmp_active_conns="$tmp_dir/active_conns"
+    local tmp_active_names="$tmp_dir/active_names"
+    local tmp_wifi_list="$tmp_dir/wifi_list"
+    local tmp_wifi_state="$tmp_dir/wifi_state"
+    local tmp_wifi_signal="$tmp_dir/wifi_signal"
+    local tmp_device_ips="$tmp_dir/device_ips"
+
+    # Run ALL data collection in parallel - only 7 nmcli calls total!
     {
-        build_active_section > "$tmp_active"
+        nmcli -t -f NAME,TYPE connection show 2>/dev/null > "$tmp_all_conns"
+    } &
+    local pid_all=$!
+
+    {
+        nmcli -t -f NAME,TYPE,DEVICE,STATE connection show --active 2>/dev/null > "$tmp_active_conns"
     } &
     local pid_active=$!
 
     {
-        local state=$(nmcli -t -f WIFI general 2>/dev/null || echo "disabled")
-        echo "$state" > "$tmp_wifi_state"
-        if [[ "$state" == "enabled" ]]; then
-            build_wifi_section > "$tmp_wifi"
+        nmcli -t -f NAME connection show --active 2>/dev/null > "$tmp_active_names"
+    } &
+    local pid_names=$!
+
+    {
+        nmcli -t -f WIFI general 2>/dev/null > "$tmp_wifi_state"
+    } &
+    local pid_state=$!
+
+    {
+        nmcli -t -f IN-USE,SIGNAL dev wifi 2>/dev/null | grep "^\*" | cut -d: -f2 > "$tmp_wifi_signal"
+    } &
+    local pid_signal=$!
+
+    {
+        if nmcli -t -f WIFI general 2>/dev/null | grep -q "enabled"; then
+            nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY dev wifi list --rescan no 2>/dev/null | sort -t: -k3 -rn > "$tmp_wifi_list"
         fi
     } &
     local pid_wifi=$!
 
     {
-        build_vpn_section > "$tmp_vpn"
+        # Get IPs for all devices in ONE call - parse the full output using grep/sed
+        nmcli device show 2>/dev/null | grep -E '^(GENERAL\.DEVICE|IP4\.ADDRESS\[1\]):' | \
+        sed -n 'N;s/GENERAL\.DEVICE:[[:space:]]*\(.*\)\nIP4\.ADDRESS\[1\]:[[:space:]]*\([^/]*\).*/\1:\2/p' | \
+        grep -v '^lo:' > "$tmp_device_ips"
     } &
-    local pid_vpn=$!
+    local pid_ips=$!
 
-    {
-        build_ethernet_section > "$tmp_eth"
-    } &
-    local pid_eth=$!
+    # Wait for all data collection to complete
+    wait $pid_all $pid_active $pid_names $pid_state $pid_signal $pid_wifi $pid_ips
 
-    # Wait for all sections to complete
-    wait $pid_active $pid_wifi $pid_vpn $pid_eth
+    # Read cached data
+    local all_conns=$(cat "$tmp_all_conns")
+    local active_conns=$(cat "$tmp_active_conns")
+    local active_names=$(cat "$tmp_active_names")
+    local wifi_state=$(cat "$tmp_wifi_state")
+    local wifi_signal=$(cat "$tmp_wifi_signal")
+    local wifi_list=$(cat "$tmp_wifi_list" 2>/dev/null)
+    local device_ips=$(cat "$tmp_device_ips")
 
-    # Read results from temp files
-    local active_section=$(cat "$tmp_active" 2>/dev/null || echo "")
-    local wifi_section=$(cat "$tmp_wifi" 2>/dev/null || echo "")
-    local vpn_section=$(cat "$tmp_vpn" 2>/dev/null || echo "")
-    local eth_section=$(cat "$tmp_eth" 2>/dev/null || echo "")
-    local wifi_state=$(cat "$tmp_wifi_state" 2>/dev/null || echo "disabled")
+    # Now build sections using cached data (no more nmcli calls!)
+    local active_section=$(build_active_section "$active_conns" "$wifi_signal" "$device_ips")
+    local vpn_section=$(build_vpn_section "$all_conns" "$active_names")
+    local eth_section=$(build_ethernet_section "$all_conns" "$active_names")
 
     # Cleanup
     rm -rf "$tmp_dir"
@@ -254,7 +235,7 @@ build_menu() {
         menu+="  ⛔ Disable WiFi\n"
         menu+="  🔄 Rescan Networks\n"
         menu+="\n"
-        menu+="$wifi_section"
+        menu+="$(build_wifi_section "$wifi_list")"
     else
         menu+="  ✅ Enable WiFi\n"
     fi
@@ -285,39 +266,45 @@ handle_wifi_connect() {
     local ssid=$(echo "$selection" | sed -E 's/^[[:space:]]*[🟢⚫][[:space:]]+([^[:space:]]+.*[^[:space:]]+)[[:space:]]+[0-9]+%.*/\1/' | xargs)
 
     # Check if already connected
-    if echo "$selection" | grep -q "$ICON_ACTIVE"; then
+    if echo "$selection" | grep -q "\[C\]"; then
         send_notification "WiFi" "Already connected to $ssid"
-        return
+        exit 0
     fi
 
     # Check if password needed (anything except "Open")
     local needs_password=0
-    echo "$selection" | grep -qv "Open$" && needs_password=1
+    echo "$selection" | grep -qvE "Open( \[C\])?$" && needs_password=1
 
     # Check if connection profile exists
     if nmcli -t -f NAME connection show 2>/dev/null | grep -qx "$ssid"; then
         # Activate existing connection
         if nmcli connection up id "$ssid" &>/dev/null; then
             send_notification "WiFi Connected" "Connected to $ssid"
+            exit 0
         else
             send_notification "WiFi Error" "Failed to connect to $ssid" "critical"
+            exit 1
         fi
     else
         # New connection
         if [[ $needs_password -eq 1 ]]; then
             local password=$(echo "" | fuzzel -d -w 40 --password -p "Password for $ssid: " 2>/dev/null)
-            [[ -z "$password" ]] && return
+            [[ -z "$password" ]] && exit 0
 
             if nmcli device wifi connect "$ssid" password "$password" &>/dev/null; then
                 send_notification "WiFi Connected" "Connected to $ssid"
+                exit 0
             else
                 send_notification "WiFi Error" "Failed to connect to $ssid" "critical"
+                exit 1
             fi
         else
             if nmcli device wifi connect "$ssid" &>/dev/null; then
                 send_notification "WiFi Connected" "Connected to $ssid"
+                exit 0
             else
                 send_notification "WiFi Error" "Failed to connect to $ssid" "critical"
+                exit 1
             fi
         fi
     fi
@@ -334,15 +321,19 @@ handle_vpn_toggle() {
         # Disconnect
         if nmcli connection down id "$vpn_name" &>/dev/null; then
             send_notification "VPN Disconnected" "$vpn_name"
+            exit 0
         else
             send_notification "VPN Error" "Failed to disconnect $vpn_name" "critical"
+            exit 1
         fi
     else
         # Connect
         if nmcli connection up id "$vpn_name" &>/dev/null; then
             send_notification "VPN Connected" "$vpn_name"
+            exit 0
         else
             send_notification "VPN Error" "Failed to connect $vpn_name" "critical"
+            exit 1
         fi
     fi
 }
@@ -357,10 +348,18 @@ handle_ethernet_toggle() {
     if echo "$selection" | grep -q "\[CONNECTED\]"; then
         if nmcli connection down id "$conn_name" &>/dev/null; then
             send_notification "Ethernet Disconnected" "$conn_name"
+            exit 0
+        else
+            send_notification "Ethernet Error" "Failed to disconnect $conn_name" "critical"
+            exit 1
         fi
     else
         if nmcli connection up id "$conn_name" &>/dev/null; then
             send_notification "Ethernet Connected" "$conn_name"
+            exit 0
+        else
+            send_notification "Ethernet Error" "Failed to connect $conn_name" "critical"
+            exit 1
         fi
     fi
 }
@@ -410,12 +409,12 @@ main() {
             *"$ICON_ETHERNET"*)
                 handle_ethernet_toggle "$selection"
                 ;;
-            *"%  WPA"*|*"%  WEP"*|*"%  Open")
-                # WiFi network selection (ends with auth type)
+            *"%  WPA"*|*"%  WEP"*|*"%  Open"*|*"%  WPA [C]"*|*"%  WEP [C]"*|*"%  Open [C]"*)
+                # WiFi network selection (ends with auth type, optionally [C])
                 handle_wifi_connect "$selection"
                 ;;
-            "━━━"*|*"No active"*|*"No VPN"*|*"WiFi is disabled"*)
-                # Ignore headers and info lines
+            "━━━"*|*"No active"*|*"No VPN"*|*"WiFi is disabled"*|*"🟢 WiFi:"*|*"🟢 Ethernet:"*|*"🟢 VPN:"*|*"    "*)
+                # Ignore headers, info lines, and active connections (read-only info)
                 continue
                 ;;
         esac
