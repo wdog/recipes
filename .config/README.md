@@ -7,10 +7,21 @@ current test distro: debian 13 testing
 
 
 ```bash
-apt install mako wl-paste fuzzel waybar hyprland
+apt install mako wl-paste fuzzel waybar hyprland grim slurp
 ```
 
 ## HYPRLAND
+
+### dependecies
+
+
+```bash
+apt install liblz4-dev libadwaita-1-dev libgtk-4-dev libhyprgraphics-dev libhyprutils-dev hyprland-dev
+apt install xdg-desktop-portal-hyprland
+
+```
+
+## build install tools
 
 
 ```bash
