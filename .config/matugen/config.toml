@@ -8,7 +8,10 @@ command = "awww"
 # The arguments that will be provided to the command.
 # Keywords like {{ mode }} or anything that works inside of hooks doesn't work here.
 # The last argument will be the image path.
-arguments = ["img", "--transition-type", "center"]
+arguments = [ "img", "--transition-type", "center" , "--transition-duration", "1.2"]
+
+#none | simple | fade | left | right | top | bottom | wipe | wave | grow
+#     | center | any | outer | random
 
 # For example, killing the wallpaper daemon. Usage is like a normal hook.
 # pre_hook = ""
