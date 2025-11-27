@@ -115,7 +115,8 @@
         "status-icons": {
             "paused": "",
             "playing": ""
-        }
+        },
+        "interval": 1
     },
     // BATTERY
     "battery": {
