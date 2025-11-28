@@ -172,7 +172,7 @@
         "icons": {
             "TelegramDesktop": "telegram",
             "spotify-client": "spotify",
-            "nm-applet": "network",
+//            "nm-applet": "network",
             "blueman": "bluetooth"
         }
     }
