@@ -9,6 +9,7 @@
     "modules-right": [
         "mpris",
         "pulseaudio",
+        // "backlight",
         "battery",
         "network",
         "tray"
@@ -17,11 +18,10 @@
     "hyprland/workspaces": {
         "format": "{icon} {windows}",
         "format-window-separator": " | ",
-        "all-outputs": true,
+        "all-outputs": false,
         "workspace-taskbar": {
             "enable": true,
             "format": "{icon}",
-            // "icon-theme": "Simplexx",
             "icon-size": 24,
             "on-click-window": "~/.config/waybar/scripts/focus-window.sh {address} {button}"
         }
@@ -51,7 +51,7 @@
     },
     // PULSEAUDIO
     "pulseaudio": {
-        "scroll-step": 2.5,
+        "scroll-step": 5,
         "format": "  {volume}% {format_source}",
         "format-muted": "  0%  {format_source}",
         "format-source": " {volume}%",
@@ -59,6 +59,11 @@
         "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
         "on-click-right": "pavucontrol",
         "on-click-middle": "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
+    },
+    "backlight": {
+        "format": "{icon} {percent}%",
+        "format-icons": ["", ""],
+        "scroll-step": 5
     },
     // NETWORK
     "network": {
@@ -120,8 +125,8 @@
     },
     // BATTERY
     "battery": {
-        // "full-at": 98,
-        // "format": "{capacity}% {icon}",
+        "full-at": 98,
+        "format": "{capacity}% {icon}",
         "format-discharging": " {capacity}% {icon}",
         "format-charging": " {percentage}% {icon}",
         "format-plugged": " {capacity} {icon}",
@@ -172,7 +177,6 @@
         "icons": {
             "TelegramDesktop": "telegram",
             "spotify-client": "spotify",
-//            "nm-applet": "network",
             "blueman": "bluetooth"
         }
     }

@@ -1,76 +1,72 @@
 @import "colors.css";
 
 * {
-  border: none;
-  border-radius: 0;
-  font-family: "JetBrainsMono NF", Helvetica, Arial, sans-serif;
-  font-size: 0.75rem;
-  min-height: 0;
+    border: none;
+    border-radius: 0;
+    font-family: "JetBrainsMono NF", Helvetica, Arial, sans-serif;
+    font-size: 0.75rem;
+    min-height: 0;
 }
 
 window#waybar {
-  background: transparent;
-  color: @on_surface;
+    background: transparent;
+    color: @on_surface;
 }
 
 tooltip {
-  background: @surface_container_high;
-  border: 1px solid @outline_variant;
-  border-radius: 8px;
-  padding: 4px 8px;
+    background: @surface_container_high;
+    border: 1px solid @outline_variant;
+    border-radius: 8px;
+    padding: 4px 8px;
 }
 
 tooltip label {
-  color: @on_surface;
+    color: @on_surface;
 }
 
 /* === WORKSPACES === */
 #workspaces {
-  margin: 5px 2px;
 }
 
 #workspaces button {
-  padding: 0px 8px;
-  margin: 0 4px;
-  border-radius: 10px;
-  background-color: @on_primary;
-  color: @primary;
-  transition: all 0.3s ease;
-  border: 1px solid @primary;
-  /* box-shadow: 0 0 2px alpha(@primary, 0.6), 0 0 2px alpha(@primary, 0.4),0 0 30px alpha(@primary, 0.2); */
+    padding: 0 12px;
+    margin: 5px 2px;
+    border-radius: 16px;
+    background-color: @on_primary;
+    color: @primary;
+    transition: all 0.3s ease;
+    border: 1px solid @primary;
 }
 
 #workspaces button.active {
-  background-color: @primary;
-  color: @background;
-  border: 1px solid @background;
-   box-shadow:
+    background-color: @primary;
+    color: @background;
+    border: 1px solid @background;
+    box-shadow:
     0 0 1px alpha(@primary,0.2),
-    0 0 3px alpha(@primary,0.4),
-    0 0 4px alpha(@primary,0.6);
-
-
-  font-weight: 800;
+    0 0 2px alpha(@primary,0.4),
+    0 0 3px alpha(@primary,0.6);
+    font-weight: 800;
 }
 
 #workspaces button.urgent {
-  background-color: @error;
-  color: @background;
-  animation: urgent-blink 1s ease-in-out infinite;
+    background-color: @error;
+    color: @background;
+    animation: urgent-blink 1s ease-in-out infinite;
 }
 
 @keyframes urgent-blink {
-  0% {
-    opacity: 1;
-  }
+    0% {
+        opacity: 1;
+    }
 
-  50% {
-    opacity: 0.6;
-  }
+    50% {
+        opacity: 0.6;
+    }
 
-  100% {
-    opacity: 1;
-  }
+    100% {
+        opacity: 1;
+    }
 }
 
 /* === WIDGETS === */
@@ -79,17 +75,19 @@ tooltip label {
 #network,
 #mpris,
 #pulseaudio,
+#backlight,
 #tray {
-  padding: 4px 12px;
-  margin: 5px 2px;
-  border-radius: 10px;
-  color: @background;
-  background: @primary;
-  border: 1px solid @background;
+    padding: 2px 6px;
+    margin: 5px 2px;
+    border-radius: 16px;
+    color: @background;
+    background: @primary;
+    border: 1px solid @background;
 }
 
 #clock {
-  font-weight: 800;
+    font-weight: 800;
+    padding: 0px 10px;
 }
 
 #battery {
@@ -102,12 +100,8 @@ tooltip label {
 }
 
 #mpris {
-  font-weight: 600;
+    font-weight: 700;
 }
 
 #tray {
-  padding: 4px 10px;
-  background-color: @primary_container;
-  border: 1px solid @primary;
-  /* box-shadow: 0 0 2px alpha(@primary, 0.6), 0 0 2px alpha(@primary, 0.4),0 0 30px alpha(@primary, 0.2); */
 }
