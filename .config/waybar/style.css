@@ -23,13 +23,11 @@ tooltip {
 tooltip label {
     color: @on_surface;
 }
-
 /* === WORKSPACES === */
-#workspaces {
-}
+#workspaces {}
 
 #workspaces button {
-    padding: 0 12px;
+    padding: 0 5px 0 5px;
     margin: 5px 2px;
     border-radius: 16px;
     background-color: @on_primary;
@@ -42,10 +40,12 @@ tooltip label {
     background-color: @primary;
     color: @background;
     border: 1px solid @background;
-    box-shadow:
-    0 0 1px alpha(@primary,0.2),
-    0 0 2px alpha(@primary,0.4),
-    0 0 3px alpha(@primary,0.6);
+    box-shadow: 0 0 1px alpha(@primary,
+    0.2),
+    0 0 2px alpha(@primary,
+    0.4),
+    0 0 3px alpha(@primary,
+    0.6);
     font-weight: 800;
 }
 
@@ -54,6 +54,8 @@ tooltip label {
     color: @background;
     animation: urgent-blink 1s ease-in-out infinite;
 }
+
+#workspaces .taskbar-window {}
 
 @keyframes urgent-blink {
     0% {
@@ -68,7 +70,6 @@ tooltip label {
         opacity: 1;
     }
 }
-
 /* === WIDGETS === */
 #clock,
 #battery,
@@ -90,18 +91,14 @@ tooltip label {
     padding: 0px 10px;
 }
 
-#battery {
-}
+#battery {}
 
-#network {
-}
+#network {}
 
-#pulseaudio {
-}
+#pulseaudio {}
 
 #mpris {
     font-weight: 700;
 }
 
-#tray {
-}
+#tray {}

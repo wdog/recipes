@@ -1,11 +1,10 @@
 {
     "layer": "top",
     "modules-left": [
-        "clock"
-    ],
-    "modules-center": [
+        "clock",
         "hyprland/workspaces"
     ],
+    "modules-center": [],
     "modules-right": [
         "mpris",
         "pulseaudio",
@@ -17,8 +16,19 @@
     // HYPRLAND WORKSPACES
     "hyprland/workspaces": {
         "format": "{icon} {windows}",
-        "format-window-separator": " | ",
+        "format-window-separator": "|",
         "all-outputs": false,
+        "format-icons": {
+            "1": "󰲠",
+            "2": "󰲢",
+            "3": "󰲤",
+            "4": "󰲦",
+            "5": "󰲨",
+            "6": "󰲪",
+            "7": "󰲬",
+            "8": "󰲮",
+            "9": "󰲰"
+        },
         "workspace-taskbar": {
             "enable": true,
             "format": "{icon}",
@@ -62,7 +72,10 @@
     },
     "backlight": {
         "format": "{icon} {percent}%",
-        "format-icons": ["", ""],
+        "format-icons": [
+            "",
+            ""
+        ],
         "scroll-step": 5
     },
     // NETWORK
@@ -121,7 +134,7 @@
             "paused": "",
             "playing": ""
         },
-        "interval": 1
+        "interval": 5
     },
     // BATTERY
     "battery": {
