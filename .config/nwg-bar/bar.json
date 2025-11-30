@@ -5,13 +5,23 @@
     "icon": "/usr/share/nwg-bar/images/system-lock-screen.svg"
   },
   {
+    "label": "Suspend",
+    "exec": "systemctl suspend",
+    "icon": "/usr/share/nwg-bar/images/system-suspend.svg"
+  },
+  {
     "label": "Logout",
     "exec": "wayland-logout",
     "icon": "/usr/share/nwg-bar/images/system-log-out.svg"
   },
   {
+    "label": "Reboot",
+    "exec": "systemctl reboot",
+    "icon": "/usr/share/nwg-bar/images/system-reboot.svg"
+  },
+  {
     "label": "Shutdown",
-    "exec": "sudo shutdown -h now",
+    "exec": "systemctl poweroff",
     "icon": "/usr/share/nwg-bar/images/system-shutdown.svg"
   }
 ]

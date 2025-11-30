@@ -1,35 +1,98 @@
-* {
-    font-size: 36px;
-}
-
 window {
-    background-color: rgba (0, 0, 0, 1.0);
-    border: 2px solid #669;
-    border-radius: 5px;
+	background-color: rgba(0, 0, 0, 0);
 }
 
 /* Outer bar container, takes all the window width/height */
 #outer-box {
-    margin: 0px;
+	/* margin-bottom: 300px; */
 }
 
 /* Inner bar container, surrounds buttons */
 #inner-box {
-    margin: 25px;
+	background-color: #1e1e2e;
+	border-radius: 16px;
+	border-style: solid;
+	border-width: 2px;
+	border-color: #89b4fa;
+	padding: 15px;
+	margin: 10px;
 }
 
 button, image {
-    background: none;
-    border: none;
-    box-shadow: none
+	background: none;
+	border: none;
+	box-shadow: none;
 }
 
 button {
-    padding: 25px;
-    border: 2px solid #669;
-    margin: 25px;
+	background-color: #313244;
+	border-radius: 12px;
+	padding: 18px 28px;
+	margin: 10px;
+	border: 2px solid #585b70;
+	color: #cdd6f4;
+	font-size: 15px;
+	font-weight: bold;
+	min-width: 120px;
 }
 
-button:hover, button:focus {
-    background-color: rgba (90, 40, 180, 0.8)
+button:hover {
+	background-color: #45475a;
+	border-color: #89b4fa;
+	color: #ffffff;
+}
+
+/* Lock button - Yellow */
+button:nth-child(1) {
+	border-color: #f9e2af;
+}
+
+button:nth-child(1):hover {
+	background-color: #f9e2af;
+	color: #1e1e2e;
+	border-color: #f9e2af;
+}
+
+/* Suspend button - Green */
+button:nth-child(2) {
+	border-color: #a6e3a1;
+}
+
+button:nth-child(2):hover {
+	background-color: #a6e3a1;
+	color: #1e1e2e;
+	border-color: #a6e3a1;
+}
+
+/* Logout button - Blue */
+button:nth-child(3) {
+	border-color: #89b4fa;
+}
+
+button:nth-child(3):hover {
+	background-color: #89b4fa;
+	color: #1e1e2e;
+	border-color: #89b4fa;
+}
+
+/* Reboot button - Peach */
+button:nth-child(4) {
+	border-color: #fab387;
+}
+
+button:nth-child(4):hover {
+	background-color: #fab387;
+	color: #1e1e2e;
+	border-color: #fab387;
+}
+
+/* Shutdown button - Red */
+button:nth-child(5) {
+	border-color: #f38ba8;
+}
+
+button:nth-child(5):hover {
+	background-color: #f38ba8;
+	color: #1e1e2e;
+	border-color: #f38ba8;
 }
