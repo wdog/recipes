@@ -12,6 +12,7 @@ width=350
 height=100
 anchor=top-right
 
+
 # Default timeout for normal priority notifications (1 second)
 default-timeout=1000
 
@@ -21,7 +22,7 @@ default-timeout=1000
 
 # Critical/urgent notifications (never timeout)
 [urgency=critical]
-default-timeout=0
+default-timeout=50000
 
 # High priority notifications (same as normal for now)
 [urgency=high]
