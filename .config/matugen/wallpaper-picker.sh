@@ -44,9 +44,22 @@ while true; do
 
     case "$confirm" in
         *"Apply"*)
-            matugen image "$wallpaper"
+            # Parameter selection menu
+            scheme_type=$(printf "scheme-tonal-spot - Balanced tonal variations (default)\nscheme-expressive - Bold, high saturation colors\nscheme-vibrant - Energetic, vibrant palette\nscheme-neutral - Subtle, minimal colors\nscheme-monochrome - Single color variations\nscheme-fidelity - High color fidelity to source\nscheme-content - Content-based color extraction\nscheme-fruit-salad - Colorful, playful palette\nscheme-rainbow - Full spectrum colors" | fuzzel --dmenu --prompt="󰏘 Scheme Type: " --select-index=0)
+            [ -z "$scheme_type" ] && continue
+            scheme_type=$(echo "$scheme_type" | awk '{print $1}')
+
+            contrast=$(printf "0 (standard)\n0.5 (enhanced)\n1 (maximum)\n-0.5 (reduced)" | fuzzel --dmenu --prompt="󰐣 Contrast: " --select-index=0)
+            [ -z "$contrast" ] && continue
+            contrast_value=$(echo "$contrast" | awk '{print $1}')
+
+            mode=$(printf "dark\nlight" | fuzzel --dmenu --prompt="󰔎 Mode: " --select-index=0)
+            [ -z "$mode" ] && continue
+
+            # Apply with selected parameters
+            matugen image "$wallpaper" --type "$scheme_type" --contrast "$contrast_value" --mode "$mode"
             pkill waybar; waybar &
-            notify-send "Wallpaper" "Applied: $filename_no_ext"
+            notify-send "Wallpaper" "Applied: $filename_no_ext\nType: $scheme_type\nContrast: $contrast_value\nMode: $mode"
             exec "$0"
             ;;
         *"Previous"*)
