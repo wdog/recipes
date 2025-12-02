@@ -44,3 +44,14 @@ cd build && meson compile
 # install
 cp libhyprtasking.so ~/.config/hypr/plugins/
 ```
+
+
+## waybar custom mpris
+
+```bash
+git clone https://github.com/Andeskjerf/waybar-module-music.git
+cd waybar-module-music
+cargo build --release
+
+cp target/release/waybar-module-music ~
+```
