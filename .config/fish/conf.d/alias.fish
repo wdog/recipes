@@ -90,7 +90,7 @@ alias tin "docker-compose exec --user (id -u):(id -g) app php artisan tin"
 alias composer "docker run --rm -it --user (id -u):(id -g) -v .:/opt -w /opt composer:latest"
 alias artr "sudo chown $USER: * -R; chmod 777 bootstrap/cache/ -R; chmod 777 storage -R"
 alias artc "art optimize:clear -q; art queue:clear; art queue:flush ; art queue:restart; art reverb:restart; art lo:cl"
-
+alias artl " colortail -f  storage/logs/laravel.log -k ~/.config/colortail/conf.laravel"
 # gnome settings write
 #alias gsw "busctl --user call org.gnome.Shell /io/elhan/ExtensionsSync io.elhan.ExtensionsSync save" # uploads to server
 # gnome settings read

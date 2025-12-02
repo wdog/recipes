@@ -27,7 +27,7 @@ tooltip label {
 #workspaces {}
 
 #workspaces button {
-    padding: 0 5px;
+    padding: 0 4px 0 12px;
     margin: 5px 2px;
     border-radius: 16px;
     background-color: @on_primary;
@@ -71,6 +71,7 @@ tooltip label {
     }
 }
 /* === WIDGETS === */
+#custom-music,
 #clock,
 #battery,
 #network,
@@ -103,3 +104,18 @@ tooltip label {
 }
 
 #tray {}
+
+#custom-music {
+    background-color: @on_primary;
+    color: @primary;
+    padding: 0px 16px;
+}
+
+#custom-music.playing {
+  color: @primary;
+}
+
+#custom-music.paused {
+  color: @secondary_container;
+}
+

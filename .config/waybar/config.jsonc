@@ -4,10 +4,10 @@
         "clock",
         "hyprland/workspaces"
     ],
-    "modules-center": [
-    ],
+    "modules-center": [],
     "modules-right": [
-        "mpris",
+        // "mpris",
+        "custom/music",
         "pulseaudio",
         // "backlight",
         "battery",
@@ -36,6 +36,16 @@
             "icon-size": 24,
             "on-click-window": "~/.config/waybar/scripts/focus-window.sh {address} {button}"
         }
+    },
+    "custom/music": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "waybar-module-music --format '%icon% %title%' --marquee --title-width 30 --effect-speed 250 ",
+        "tooltip-format": "{}",
+        "tooltip": true,
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous"
     },
     // CLOCK
     "clock": {
@@ -142,7 +152,7 @@
         "full-at": 98,
         "format": "{capacity}% {icon}",
         "format-discharging": " {capacity}% {icon}",
-        "format-charging": " {percentage}% {icon}",
+        "format-charging": " {capacity}% {icon}",
         "format-plugged": " {capacity} {icon}",
         "format-icons": {
             "charging": [
@@ -174,7 +184,6 @@
         "tooltip-format-discharging": "{power:>1.0f}W↓ {capacity}%",
         "tooltip-format-charging": "{power:>1.0f}W↑ {capacity}%",
         "interval": 5,
-        "on-click": "omarchy-menu power",
         "states": {
             "warning": 20,
             "critical": 10
@@ -185,6 +194,7 @@
             "on-charging-100": "notify-send -u normal 'Battery Full!'"
         }
     },
+
     "tray": {
         "icon-size": 24,
         "spacing": 4,
