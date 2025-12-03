@@ -265,10 +265,20 @@ handle_wifi_connect() {
     # Extract SSID (between active mark and signal percentage)
     local ssid=$(echo "$selection" | sed -E 's/^[[:space:]]*[🟢⚫][[:space:]]+([^[:space:]]+.*[^[:space:]]+)[[:space:]]+[0-9]+%.*/\1/' | xargs)
 
-    # Check if already connected
+    # Check if already connected - if so, reconnect
     if echo "$selection" | grep -q "\[C\]"; then
-        send_notification "WiFi" "Already connected to $ssid"
-        exit 0
+        send_notification "WiFi" "Reconnecting to $ssid..."
+        # Disconnect first
+        nmcli connection down id "$ssid" &>/dev/null || true
+        sleep 1
+        # Then reconnect
+        if nmcli connection up id "$ssid" &>/dev/null; then
+            send_notification "WiFi Reconnected" "Reconnected to $ssid"
+            exit 0
+        else
+            send_notification "WiFi Error" "Failed to reconnect to $ssid" "critical"
+            exit 1
+        fi
     fi
 
     # Check if password needed (anything except "Open")
@@ -317,13 +327,18 @@ handle_vpn_toggle() {
     # Extract VPN name
     local vpn_name=$(echo "$selection" | sed -E 's/^[[:space:]]*[🟢⚫][[:space:]]*[^[:space:]]+[[:space:]]+([^[]+).*/\1/' | xargs)
 
-    if echo "$selection" | grep -q "\[CONNECTED\]"; then
-        # Disconnect
-        if nmcli connection down id "$vpn_name" &>/dev/null; then
-            send_notification "VPN Disconnected" "$vpn_name"
+    if echo "$selection" | grep -q "\[C\]"; then
+        # If connected, reconnect
+        send_notification "VPN" "Reconnecting to $vpn_name..."
+        # Disconnect first
+        nmcli connection down id "$vpn_name" &>/dev/null || true
+        sleep 1
+        # Then reconnect
+        if nmcli connection up id "$vpn_name" &>/dev/null; then
+            send_notification "VPN Reconnected" "Reconnected to $vpn_name"
             exit 0
         else
-            send_notification "VPN Error" "Failed to disconnect $vpn_name" "critical"
+            send_notification "VPN Error" "Failed to reconnect $vpn_name" "critical"
             exit 1
         fi
     else
