@@ -8,7 +8,7 @@ set -euo pipefail
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/network-chooser"
 CONFIG_FILE="$CONFIG_DIR/config"
 FUZZEL_LINES=20
-FUZZEL_WIDTH=60
+FUZZEL_WIDTH=70
 
 # Icons
 ICON_ETHERNET="🔌"
@@ -57,7 +57,7 @@ build_active_section() {
                 output+="  🟢 Ethernet: $name"
                 [[ -n "$ip" ]] && output+=" - $ip\n"
                 ;;
-            vpn|wireguard|tun)
+            vpn|wireguard)
                 output+="  🟢 VPN: $name"
                 [[ -n "$ip" ]] && output+=" - $ip\n"
                 ;;
@@ -105,9 +105,14 @@ build_vpn_section() {
     local active_names="$2"
     local output=""
     local has_vpn=0
+    local seen_names=()
 
     # Get all VPN-type connections
     while IFS=: read -r name type; do
+        # Skip if we've already seen this name (avoid duplicates)
+        [[ " ${seen_names[*]} " =~ " ${name} " ]] && continue
+        seen_names+=("$name")
+
         has_vpn=1
 
         # Check if this VPN is active using cached data
@@ -116,7 +121,7 @@ build_vpn_section() {
         else
             output+="  ⚫ $ICON_VPN_DISCONNECTED $name\n"
         fi
-    done <<< "$(grep -E ":vpn$|:wireguard$|:tun$" <<< "$all_conns")"
+    done <<< "$(grep -E ":vpn$|:wireguard$" <<< "$all_conns")"
 
     if [[ $has_vpn -eq 0 ]]; then
         output="  No VPN connections configured\n"
@@ -197,16 +202,16 @@ build_menu() {
     } &
     local pid_wifi=$!
 
-    {
-        # Get IPs for all devices in ONE call - parse the full output using grep/sed
-        nmcli device show 2>/dev/null | grep -E '^(GENERAL\.DEVICE|IP4\.ADDRESS\[1\]):' | \
-        sed -n 'N;s/GENERAL\.DEVICE:[[:space:]]*\(.*\)\nIP4\.ADDRESS\[1\]:[[:space:]]*\([^/]*\).*/\1:\2/p' | \
-        grep -v '^lo:' > "$tmp_device_ips"
-    } &
-    local pid_ips=$!
+    # {
+    #     # Get IPs for all devices in ONE call - parse the full output using grep/sed
+    #     nmcli device show 2>/dev/null | grep -E '^(GENERAL\.DEVICE|IP4\.ADDRESS\[1\]):' | \
+    #     sed -n 'N;s/GENERAL\.DEVICE:[[:space:]]*\(.*\)\nIP4\.ADDRESS\[1\]:[[:space:]]*\([^/]*\).*/\1:\2/p' | \
+    #     grep -v '^lo:' > "$tmp_device_ips"
+    # } &
+    # local pid_ips=$!
 
     # Wait for all data collection to complete
-    wait $pid_all $pid_active $pid_names $pid_state $pid_signal $pid_wifi $pid_ips
+    wait $pid_all $pid_active $pid_names $pid_state $pid_signal $pid_wifi # $pid_ips
 
     # Read cached data
     local all_conns=$(cat "$tmp_all_conns")
@@ -215,10 +220,10 @@ build_menu() {
     local wifi_state=$(cat "$tmp_wifi_state")
     local wifi_signal=$(cat "$tmp_wifi_signal")
     local wifi_list=$(cat "$tmp_wifi_list" 2>/dev/null)
-    local device_ips=$(cat "$tmp_device_ips")
+    # local device_ips=$(cat "$tmp_device_ips")
 
     # Now build sections using cached data (no more nmcli calls!)
-    local active_section=$(build_active_section "$active_conns" "$wifi_signal" "$device_ips")
+    local active_section=$(build_active_section "$active_conns" "$wifi_signal" "")
     local vpn_section=$(build_vpn_section "$all_conns" "$active_names")
     local eth_section=$(build_ethernet_section "$all_conns" "$active_names")
 

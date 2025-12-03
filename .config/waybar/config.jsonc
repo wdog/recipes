@@ -114,7 +114,7 @@
         "tooltip-format-ethernet": "󰈀 {ifname}\nIP: {ipaddr}/{cidr}\nGateway: {gwaddr}",
         "tooltip-format-disconnected": "󰌙 Disconnected",
         "max-length": 50,
-        "on-right-click": "~/bin/network-chooser",
+        "on-click-right": "~/bin/network-chooser",
         "interface-blacklist": [
             "tun*",
             "tap*",
