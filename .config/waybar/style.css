@@ -74,6 +74,7 @@ tooltip label {
 #custom-music,
 #clock,
 #battery,
+#bluetooth,
 #network,
 #mpris,
 #pulseaudio,
@@ -86,6 +87,11 @@ tooltip label {
     color: @background;
     background: @primary;
     border: 1px solid @background;
+}
+
+#image {
+    background: @background;
+    border:1px solid @primary;
 }
 
 #clock {

@@ -1,35 +1,46 @@
 {
     "layer": "top",
+    "reload_style_on_change": true,
     "modules-left": [
         "clock",
         "hyprland/workspaces"
     ],
     "modules-center": [],
     "modules-right": [
+        "image",
         // "mpris",
         "custom/music",
         "pulseaudio",
         // "backlight",
         "battery",
+        "bluetooth",
         "network",
         "tray"
     ],
+    // IMAGE SPOTIFY
+    "image": {
+        "exec": "~/.config/waybar/scripts/album-art.sh",
+        "size": 32,
+        "interval": 5,
+        "on-click": "imv-wayland $(~/.config/waybar/scripts/album-art.sh)"
+    },
+    // BLUETOOTH
+    "bluetooth": {
+        "format": " {status}",
+        // "format-connected": " {device_alias}",
+        // "format-connected-battery": " {device_alias} {device_battery_percentage}%",
+        // "format-device-preference": [ "device1", "device2" ], // preference list deciding the displayed device
+        "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+        "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+        "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
+        "on-click": "blueman-manager"
+    },
     // HYPRLAND WORKSPACES
     "hyprland/workspaces": {
         "format": "{icon} {windows}",
         "format-window-separator": "|",
         "all-outputs": false,
-        // "format-icons": {
-        //     "1": "󰲠",
-        //     "2": "󰲢",
-        //     "3": "󰲤",
-        //     "4": "󰲦",
-        //     "5": "󰲨",
-        //     "6": "󰲪",
-        //     "7": "󰲬",
-        //     "8": "󰲮",
-        //     "9": "󰲰"
-        // },
         "workspace-taskbar": {
             "enable": true,
             "format": "{icon}",
@@ -194,7 +205,6 @@
             "on-charging-100": "notify-send -u normal 'Battery Full!'"
         }
     },
-
     "tray": {
         "icon-size": 24,
         "spacing": 4,
