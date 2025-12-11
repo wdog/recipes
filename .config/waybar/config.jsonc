@@ -40,7 +40,13 @@
     "hyprland/workspaces": {
         "format": "{icon} {windows}",
         "format-window-separator": "|",
-        "all-outputs": false,
+        "all-outputs": true,
+        "active-only": false,
+        "show-special": false,
+        "persistent-workspaces": {
+            "DP-6": [1, 2, 3, 4, 5],
+            "DP-9": [6, 7, 8, 9, 10]
+        },
         "workspace-taskbar": {
             "enable": true,
             "format": "{icon}",
