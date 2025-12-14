@@ -7,16 +7,25 @@
     ],
     "modules-center": [],
     "modules-right": [
+        // "group/group-audio",
         "image",
-        // "mpris",
         "custom/music",
         "pulseaudio",
+        // "mpris",
         // "backlight",
         "battery",
         "bluetooth",
         "network",
         "tray"
     ],
+       "group/group-audio": {
+	    "orientation": "horizontal",
+	    "drawer": {
+		    "transition-duration": 500,
+		    "transition-left-to-right": false
+	    },
+	    "modules": ["image", "custom/music","pulseaudio"]
+    },
     // IMAGE SPOTIFY
     "image": {
         "exec": "~/.config/waybar/scripts/album-art.sh",
@@ -27,9 +36,6 @@
     // BLUETOOTH
     "bluetooth": {
         "format": " {status}",
-        // "format-connected": " {device_alias}",
-        // "format-connected-battery": " {device_alias} {device_battery_percentage}%",
-        // "format-device-preference": [ "device1", "device2" ], // preference list deciding the displayed device
         "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
         "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
         "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
