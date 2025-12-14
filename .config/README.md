@@ -62,3 +62,5 @@ cp target/release/waybar-module-music ~
 
 KORA https://www.gnome-look.org/p/1256209
 QOGIR DARK https://github.com/vinceliuice/Qogir-theme.git
+
+reload_gtk_theme to apply
