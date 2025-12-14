@@ -55,3 +55,10 @@ cargo build --release
 
 cp target/release/waybar-module-music ~
 ```
+
+
+
+## icons gtk theme
+
+KORA https://www.gnome-look.org/p/1256209
+QOGIR DARK https://github.com/vinceliuice/Qogir-theme.git

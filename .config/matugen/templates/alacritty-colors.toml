@@ -1,68 +1,68 @@
-# Alacritty Colors
-# Generated with Matugen
-
 [colors.primary]
-background = '{{colors.surface.default.hex}}'
+background = '{{colors.background.default.hex}}'
 foreground = '{{colors.on_surface.default.hex}}'
 
 [colors.cursor]
-text = '{{colors.surface.default.hex}}'
-cursor = '{{colors.primary.default.hex}}'
+text = '{{colors.on_surface.default.hex}}'
+cursor = '{{colors.on_surface_variant.default.hex}}'
 
 [colors.vi_mode_cursor]
-text = '{{colors.surface.default.hex}}'
-cursor = '{{colors.tertiary.default.hex}}'
+text = '{{colors.background.default.hex}}'
+cursor = '{{colors.primary.default.hex}}'
 
 [colors.search.matches]
-foreground = '{{colors.on_tertiary_container.default.hex}}'
-background = '{{colors.tertiary_container.default.hex}}'
+foreground = '{{colors.surface_variant.default.hex}}'
+background = '{{colors.tertiary.default.hex}}'
 
 [colors.search.focused_match]
-foreground = '{{colors.on_primary_container.default.hex}}'
-background = '{{colors.primary_container.default.hex}}'
+foreground = '{{colors.surface_variant.default.hex}}'
+background = '{{colors.primary.default.hex}}'
 
 [colors.footer_bar]
-foreground = '{{colors.on_surface.default.hex}}'
-background = '{{colors.surface_container.default.hex}}'
+foreground = '{{colors.surface_variant.default.hex}}'
+background = '{{colors.inverse_surface.default.hex}}'
 
 [colors.hints.start]
-foreground = '{{colors.on_secondary_container.default.hex}}'
-background = '{{colors.secondary_container.default.hex}}'
+foreground = '{{colors.surface_variant.default.hex}}'
+background = '{{colors.secondary.default.hex}}'
 
 [colors.hints.end]
-foreground = '{{colors.on_tertiary_container.default.hex}}'
-background = '{{colors.tertiary_container.default.hex}}'
+foreground = '{{colors.surface_variant.default.hex}}'
+background = '{{colors.secondary.default.hex}}'
 
 [colors.selection]
-text = '{{colors.on_primary_container.default.hex}}'
-background = '{{colors.primary_container.default.hex}}'
+text = '{{colors.background.default.hex}}'
+background = '{{colors.primary.default.hex}}'
+
 
 [colors.normal]
-black = '{{colors.scrim.default.hex}}'
+black = '#181818'
 red = '{{colors.error.default.hex}}'
 green = '{{colors.primary.default.hex}}'
-yellow = '{{colors.tertiary.default.hex}}'
-blue = '{{colors.inverse_primary.default.hex}}'
+yellow = '{{colors.inverse_primary.default.hex}}'
+blue = '{{colors.primary.default.hex}}'
 magenta = '{{colors.tertiary.default.hex}}'
-cyan = '{{colors.primary.default.hex}}'
-white = '{{colors.inverse_surface.default.hex}}'
+cyan = '{{colors.secondary.default.hex}}'
+white = '#BAC2DE'
+
 
 [colors.bright]
-black = '{{colors.outline.default.hex}}'
-red = '{{colors.error.default.hex}}'
-green = '{{colors.primary.default.hex}}'
-yellow = '{{colors.tertiary.default.hex}}'
-blue = '{{colors.inverse_primary.default.hex}}'
-magenta = '{{colors.tertiary.default.hex}}'
-cyan = '{{colors.primary.default.hex}}'
-white = '{{colors.inverse_surface.default.hex}}'
+black = '#585B70'
+red = '#F38BA8'
+green = '#A6E3A1'
+yellow = '#F9E2AF'
+blue = '#89B4FA'
+magenta = '#F5C2E7'
+cyan = '#94E2D5'
+white = '#A6ADC8'
+
 
 [colors.dim]
-black = '{{colors.surface_container_low.default.hex}}'
-red = '{{colors.error_container.default.hex}}'
-green = '{{colors.on_primary_fixed_variant.default.hex}}'
-yellow = '{{colors.on_tertiary_fixed_variant.default.hex}}'
-blue = '{{colors.on_secondary_fixed_variant.default.hex}}'
-magenta = '{{colors.on_tertiary_fixed_variant.default.hex}}'
-cyan = '{{colors.on_primary_fixed_variant.default.hex}}'
-white = '{{colors.outline_variant.default.hex}}'
+black = '#45475A'
+red = '#F38BA8'
+green = '#A6E3A1'
+yellow = '#F9E2AF'
+blue = '#89B4FA'
+magenta = '#F5C2E7'
+cyan = '#94E2D5'
+white = '#BAC2DE'
