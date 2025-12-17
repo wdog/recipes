@@ -1,4 +1,4 @@
-COLOR black
+COLOR red
 {
 # matches the date
 ^(\[....-..-.. ..:..:..]).*$
