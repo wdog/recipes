@@ -140,4 +140,8 @@ function ask -d "sgpt shell command suggestions"
     $HOME/.local/bin/sgpt --describe-shell -- $argv
 end
 
+alias dcup 'cd ..; and docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d; and cd src'
+alias dcdown 'cd ..; and docker-compose down; and cd src'
+alias dclogs 'cd ..; and docker-compose logs -f'
+
 # vim: ft=fish
