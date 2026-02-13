@@ -1,69 +1,47 @@
+palette = "gruvbox_rainbow"
+
 format = """
-[](#2C3E50)\
-$os\
+[](color_orange)\
 $username\
-$sudo\
-$hostname\
-[](bg:#F1C40F fg:#2C3E50)\
+[](bg:color_yellow fg:color_orange)\
 $directory\
-[](fg:#F1C40F bg:#003E50)\
+[](fg:color_yellow bg:color_aqua)\
 $git_branch\
+$git_commit\
 $git_status\
 $git_metrics\
-$git_commit\
-[](fg:#003E50 bg:#F87FF4)\
-$localip\
-$python\
-[](fg:#F87FF4)\
-$line_break\
-$character
-"""
+$git_state\
+[](fg:color_aqua)\
+$line_break$character"""
 
+[palettes.gruvbox_rainbow]
+color_fg0 = "#fbf1c7"
+color_bg1 = "#3c3836"
+color_bg3 = "#665c54"
+color_green = "#b8bb26"
+color_orange = "#d65d0e"
+color_yellow = "#d79921"
+color_aqua = "#003E50"
+color_blue = "#458588"
+color_purple = "#b16286"
+color_red = "#cc241d"
 
-[sudo]
-style = 'bg:#2C3E50'
-symbol = '👿 '
-disabled = true
-
-# Set to true to avoid a two-line prompt
 [line_break]
 disabled = false
 
-# Set disabled to true when using a one-line prompt for more aesthetically pleasing results
 [character]
-success_symbol = '[✳️ ](bold green)[ ❯](bold green)'
-error_symbol = '[🧨](bold red)[ ❯](bold green) '
-format = '$symbol'
-disabled = false
+success_symbol = '[❯](bold color_green)'
+error_symbol = '[❯](bold color_red)'
+format = '$symbol '
 
-# Disable the blank line at the start of the prompt
-#add_newline = false
-
-# You can also replace your username with a neat symbol like  or disable this
-# and use the os module below
 [username]
 show_always = true
-style_user = 'bg:#2C3E50'
-style_root = 'bg:#2C3E50'
-format = '[$user ]($style)'
-disabled = false
-
-[hostname]
-ssh_only = true
-ssh_symbol = '🌐'
-trim_at = '.'
-style = 'bg:#2C3E50'
-format = '[$ssh_symbol $hostname]($style)'
-disabled = false
-
-# An alternative to the username module which displays a symbol that
-# represents the current operating system
-[os]
-style = 'bg:#2C3E50'
-disabled = true  # disabled by default
+style_user = 'bg:color_orange fg:color_fg0'
+style_root = 'bg:color_orange fg:color_red'
+format = '[ $user ]($style)'
 
 [directory]
-style = 'bg:#F1C40F fg:#2C3E50'
+style = 'bg:color_yellow fg:color_bg1'
 format = '[ $path ]($style)'
 truncation_length = 3
 truncation_symbol = "…/"
@@ -78,7 +56,6 @@ truncate_to_repo = false
 "Desktop" = "󰚝 "
 "Projects" = "󱁉 "
 "~" = "󰋜 "
-"bin" = "󰘨 "
 "tmp" = "󰪺 "
 "tests" = "󰙨 "
 "build" = "󰜬 "
@@ -88,57 +65,45 @@ truncate_to_repo = false
 "images" = "󰋩 "
 "fonts" = "󰛖 "
 
+[git_state]
+format = '[\($state( $progress_current of $progress_total)\)]($style) '
+cherry_pick = '[🍒 PICKING](bold red)'
 
+[git_status]
+style = 'bg:color_aqua fg:color_fg0'
+format = '[ $all_status$ahead_behind]($style)'
+modified = '[ +$count ](fg:color_yellow bg:color_aqua)'
+untracked = '[ ?$count](fg:color_orange bg:color_aqua)'
+deleted = '[ -$count](fg:color_red bg:color_aqua)'
+staged = '[ ++$count](fg:color_green bg:color_aqua)'
+conflicted = '[  $count](fg:color_red bg:color_aqua)'
+stashed = '[  $count](fg:color_purple bg:color_aqua)'
+renamed = '[  $count](fg:color_orange bg:color_aqua)'
+ahead = '[ ⇡$count](fg:color_green bg:color_aqua)'
+behind = '[ ⇣$count](fg:color_red bg:color_aqua)'
+diverged = '[ ⇕${ahead_count} ${behind_count}](fg:color_orange bg:color_aqua)'
 
 [git_metrics]
-format = '[+$added]($added_style)[/](fg:#2C3E50 bg:#003E50)[-$deleted ]($deleted_style)'
-disabled = true
-deleted_style = 'bg:#003E50 fg:#cC0000'
-added_style = 'bg:#003E50 fg:#2Cff00'
-
+disabled = false
+format = '[   ](fg:color_fg0 bg:color_aqua)[+$added](fg:color_green bg:color_aqua)[ -$deleted ](fg:color_red bg:color_aqua)'
+added_style = ''
+deleted_style = ''
 
 [git_branch]
 symbol = ''
-style = 'bg:#003E50 fg:#d2d2d2'
-format = '[ $symbol $branch ]($style)'
-
-[git_status]
-style = 'bg:#003E50'
-format = '[$all_status $ahead_behind]($style)'
-modified = '[+$count ](fg:#33Fc40 bg:#003E50)'
-untracked = '[?$count ](fg:#ffff00 bg:#003E50)'
-deleted = '[$count 﫧](fg:red bg:#003E50)'
-
-conflicted = '\($count  \)'
-stashed = '\($count  \)'
-renamed = '\($count  \)'
-staged = '[++\($count\)](green)'
-ahead = '⇡${count}'
-diverged = '⇕⇡${ahead_count}⇣${behind_count}'
-behind = '⇣${count}'
+style = 'bg:color_aqua fg:color_fg0'
+# format = '[ $symbol $branch ]($style)'
+format = '[ $symbol $branch(:$remote_branch)]($style)'
 
 [git_commit]
-commit_hash_length = 4
+# format = '[$hash $tag ]($style)'
+format = '[@$hash ]($style)'
+commit_hash_length = 5
+only_detached = false
 tag_symbol = '🔖 '
+style = 'bg:color_aqua fg:color_blue'
 
-[nodejs]
-symbol = ''
-style = 'bg:#2ECC71 fg:#2C3E50'
-format = '[ $symbol ($version) ]($style)'
-
-[python]
-symbol = '🐍'
-format = '[${symbol} ${pyenv_prefix} (${version} )(\($virtualenv\) )]($style)'
-style = 'bg:#F87FF4 fg:#2C3E50'
-pyenv_prefix = "venv "
-python_binary = ["./venv/bin/python", "python", "python3", "python2"]
-detect_extensions = ["py"]
-version_format = "v${raw}"
-
-[localip]
-ssh_only = false
-format = '[📟 ${localipv4}]($style)'
+[sudo]
+style = 'bg:#2C3E50'
+symbol = '👿 '
 disabled = true
-style = 'bg:#F87FF4 fg:#2C3E50'
-
-

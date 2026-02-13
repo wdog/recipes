@@ -8,7 +8,7 @@
     "modules-center": [],
     "modules-right": [
         // "group/group-audio",
-        "image",
+        // "image",
         "custom/music",
         "pulseaudio",
         // "mpris",
@@ -26,13 +26,15 @@
 	    },
 	    "modules": ["image", "custom/music","pulseaudio"]
     },
+
     // IMAGE SPOTIFY
-    "image": {
-        "exec": "~/.config/waybar/scripts/album-art.sh",
-        "size": 32,
-        "interval": 5,
-        "on-click": "imv-wayland $(~/.config/waybar/scripts/album-art.sh)"
-    },
+    // "image": {
+    //     "exec": "~/.config/waybar/scripts/album-art.sh",
+    //     "size": 32,
+    //     "interval": 5,
+    //     "on-click": "imv-wayland $(~/.config/waybar/scripts/album-art.sh)"
+    // },
+
     // BLUETOOTH
     "bluetooth": {
         "format": " {status}",
