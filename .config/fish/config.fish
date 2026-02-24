@@ -18,3 +18,7 @@ starship init fish | source
 
 
 alias claude="~/.local/bin/claude"
+
+# bun
+set --export BUN_INSTALL "$HOME/.bun"
+set --export PATH $BUN_INSTALL/bin $PATH
