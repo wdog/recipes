@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/wdog/.config/**)",
+      "Bash(chmod +x /home/wdog/.config/waybar/scripts/music.sh)",
+      "WebFetch(domain:preview.redd.it)"
+    ]
+  }
+}
