@@ -24,10 +24,10 @@ window#waybar {
 /* ── Workspaces ─────────────────────────────────────── */
 
 #workspaces {
-    border: 3px solid @primary;
+    border: 2px solid @primary;
     background: @surface_container;
-    margin: 0px 2px;
-    padding: 0 2px;
+    margin: 4px 2px;
+    padding: 2px 2px;
     border-radius: 6px;
 }
 
@@ -62,7 +62,8 @@ window#waybar {
 
 #clock {
     background: @surface_container;
-    color: @on_surface_variant;
+    border: 2px solid @primary;
+    color: @primary;
     padding: 0 12px;
     margin: 4px 2px;
     border-radius: 6px;
@@ -74,6 +75,7 @@ window#waybar {
 
 #window {
     background: @surface_container;
+    border: 2px solid @outline_variant;
     padding: 0 10px;
     margin: 4px 2px;
     border-radius: 6px;
@@ -99,10 +101,12 @@ window#waybar {
 /* ── Music ──────────────────────────────────────────── */
 
 #custom-music {
-    color: @on_surface_variant;
+    border: 2px solid @primary;
+    color: @primary;
 }
 
 #custom-music.paused {
+    border: 2px solid @outline_variant;
     color: @outline;
     font-style: italic;
 }
@@ -110,63 +114,75 @@ window#waybar {
 /* ── Volume / Audio ─────────────────────────────────── */
 
 #pulseaudio {
-    color: @on_surface_variant;
+    border: 2px solid @tertiary;
+    color: @tertiary;
 }
 
 #pulseaudio.muted {
-    color: @outline_variant;
+    border: 2px solid @outline_variant;
+    color: @outline;
 }
 
 #pulseaudio.source-muted {
-    color: @outline_variant;
+    color: @on_surface_variant;
 }
 
 /* ── Backlight ──────────────────────────────────────── */
 
 #backlight {
-    color: @on_surface_variant;
+    border: 2px solid @secondary;
+    color: @secondary;
 }
 
 /* ── Bluetooth ──────────────────────────────────────── */
 
 #bluetooth {
+    border: 2px solid @outline_variant;
     color: @outline;
 }
 
 #bluetooth.connected {
+    border: 2px solid @tertiary;
     color: @tertiary;
 }
 
 #bluetooth.disabled {
+    border: 2px solid @outline_variant;
     color: @outline_variant;
 }
 
 /* ── Network ────────────────────────────────────────── */
 
 #network {
-    color: @on_surface_variant;
+    border: 2px solid @secondary;
+    color: @secondary;
 }
 
 #network.disconnected {
+    border: 2px solid @error;
     color: @error;
 }
 
 /* ── Battery ────────────────────────────────────────── */
 
 #battery {
+    border: 2px solid @outline_variant;
     color: @on_surface_variant;
 }
 
 #battery.charging,
 #battery.plugged {
+    border: 2px solid @tertiary;
     color: @tertiary;
 }
 
 #battery.warning:not(.charging) {
+    border: 2px solid @error;
     color: @error;
 }
 
 #battery.critical:not(.charging) {
+    border: 2px solid @error;
     color: @error;
     animation-name: blink-critical;
     animation-duration: 0.5s;
