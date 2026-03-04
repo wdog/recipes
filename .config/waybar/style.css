@@ -9,7 +9,7 @@
     font-size: 0.75rem;
     min-height: 0;
     border: none;
-    border-radius: 0;
+    border-radius: 12px;
 }
 
 /* ── Bar ────────────────────────────────────────────── */
@@ -28,14 +28,14 @@ window#waybar {
     background: @surface_container;
     margin: 4px 2px;
     padding: 2px 2px;
-    border-radius: 6px;
+    border-radius: 12px;
 }
 
 #workspaces button {
     padding: 0 8px;
     color: @outline;
     background: transparent;
-    border-radius: 4px;
+    border-radius: 12px;
     transition: all 100ms ease;
 }
 
@@ -66,7 +66,7 @@ window#waybar {
     color: @primary;
     padding: 0 12px;
     margin: 4px 2px;
-    border-radius: 6px;
+    border-radius: 12px;
     font-weight: bold;
     letter-spacing: 0.5px;
 }
@@ -78,7 +78,7 @@ window#waybar {
     border: 2px solid @outline_variant;
     padding: 0 10px;
     margin: 4px 2px;
-    border-radius: 6px;
+    border-radius: 12px;
     color: @outline;
     font-style: italic;
 }
@@ -95,7 +95,7 @@ window#waybar {
     background: @surface_container;
     padding: 0 10px;
     margin: 4px 2px;
-    border-radius: 6px;
+    border-radius: 12px;
 }
 
 /* ── Music ──────────────────────────────────────────── */
@@ -220,7 +220,7 @@ window#waybar {
 tooltip {
     background: @surface_container_lowest;
     border: 1px solid @surface_container_high;
-    border-radius: 4px;
+    border-radius: 12px;
 }
 
 tooltip label {
