@@ -27,15 +27,16 @@ window#waybar {
     border: 2px solid @primary;
     background: @surface_container;
     margin: 4px 2px;
-    padding: 2px 2px;
+    padding:4px 2px;
     border-radius: 12px;
 }
 
 #workspaces button {
-    padding: 0 8px;
+    padding: 0px 8px;
+    margin: 0px;
     color: @outline;
-    background: transparent;
-    border-radius: 12px;
+    background: @outline_inverse;
+    border-radius: 8px;
     transition: all 100ms ease;
 }
 
@@ -45,18 +46,16 @@ window#waybar {
 }
 
 #workspaces button.active {
-    color: @primary;
-    background: @surface_container_high;
+    color: @on_primary;
+    background: @on_primary_fixed;
     font-weight: bold;
 }
 
 #workspaces button.urgent {
     color: @error;
+    background-color: @error_surface;
 }
 
-#workspaces button.empty {
-    color: @outline_variant;
-}
 
 /* ── Clock ──────────────────────────────────────────── */
 
