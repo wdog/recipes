@@ -1,82 +1,32 @@
 {
+    // ┌─────────────────────────────────────────────┐
+    // │  Waybar — Gruvbox Dark  │  Hyprland Laptop   │
+    // └─────────────────────────────────────────────┘
     "layer": "top",
+    "position": "top",
+    "height": 36,
+    "spacing": 0,
     "reload_style_on_change": true,
     "modules-left": [
         "clock",
-        "hyprland/workspaces"
+        "hyprland/workspaces",
+        "hyprland/window"
     ],
     "modules-center": [],
     "modules-right": [
-        // "group/group-audio",
-        // "image",
         "custom/music",
         "pulseaudio",
-        // "mpris",
-        // "backlight",
-        "battery",
         "bluetooth",
+        // "backlight",
         "network",
+        "battery",
         "tray"
     ],
-       "group/group-audio": {
-	    "orientation": "horizontal",
-	    "drawer": {
-		    "transition-duration": 500,
-		    "transition-left-to-right": false
-	    },
-	    "modules": ["image", "custom/music","pulseaudio"]
-    },
-
-    // IMAGE SPOTIFY
-    // "image": {
-    //     "exec": "~/.config/waybar/scripts/album-art.sh",
-    //     "size": 32,
-    //     "interval": 5,
-    //     "on-click": "imv-wayland $(~/.config/waybar/scripts/album-art.sh)"
-    // },
-
-    // BLUETOOTH
-    "bluetooth": {
-        "format": " {status}",
-        "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
-        "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
-        "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
-        "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
-        "on-click": "blueman-manager"
-    },
-    // HYPRLAND WORKSPACES
-    "hyprland/workspaces": {
-        "format": "{icon} {windows}",
-        "format-window-separator": "|",
-        "all-outputs": false,
-        "active-only": false,
-        "show-special": false,
-        "persistent-workspaces": {
-            "DP-5": [1, 2, 3, 4, 5],
-            "DP-7": [6, 7, 8, 9, 10]
-        },
-        "workspace-taskbar": {
-            "enable": true,
-            "format": "{icon}",
-            "icon-size": 24,
-            "on-click-window": "~/.config/waybar/scripts/focus-window.sh {address} {button}"
-        }
-    },
-    "custom/music": {
-        "format": "{}",
-        "return-type": "json",
-        "exec": "waybar-module-music --format '%icon% %title%' --marquee --title-width 30 --effect-speed 250 ",
-        "tooltip-format": "{}",
-        "tooltip": true,
-        "on-click": "playerctl play-pause",
-        "on-scroll-up": "playerctl next",
-        "on-scroll-down": "playerctl previous"
-    },
-    // CLOCK
+    // ── Left ──────────────────────────────────────
     "clock": {
         "locale": "it_IT.UTF-8",
-        "format": " {:%H:%M}",
-        "format-alt": " {:%A %d %B}",
+        "format": "[ {:%H:%M} ]",
+        "format-alt": "[ {:%A %d %B} ]",
         "tooltip-format": "<tt>{calendar}</tt>",
         "calendar": {
             "mode": "month",
@@ -95,7 +45,56 @@
             "on-click-right": "mode"
         }
     },
-    // PULSEAUDIO
+    "hyprland/workspaces": {
+        "format": "{icon} {windows}",
+        "all-outputs": false,
+        "active-only": false,
+        "show-special": false,
+        "persistent-workspaces": {
+            "DP-5": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "DP-7": [
+                6,
+                7,
+                8,
+                9,
+                10
+            ]
+        },
+        "workspace-taskbar": {
+            "enable": true,
+            "format": "{icon}",
+            "icon-size": 24,
+            "on-click-window": "~/.config/waybar/scripts/focus-window.sh {address} {button}"
+        }
+    },
+    "hyprland/window": {
+        "max-length": 60,
+        "separate-outputs": true,
+        "rewrite": {
+            "(.*) — Mozilla Firefox": "  $1",
+            "(.*) - fish": "  $1",
+            "(.*) - nvim": "  $1",
+            "": "  desktop"
+        }
+    },
+    // ── Center ────────────────────────────────────
+    // ── Right ─────────────────────────────────────
+    "custom/music": {
+        "format": "{}",
+        "return-type": "json",
+        "exec": "waybar-module-music --format '%icon% %title%' --marquee --title-width 30 --effect-speed 250",
+        "tooltip-format": "{}",
+        "tooltip": true,
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous"
+    },
     "pulseaudio": {
         "scroll-step": 5,
         "format": "  {volume}% {format_source}",
@@ -106,19 +105,20 @@
         "on-click-right": "pavucontrol",
         "on-click-middle": "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
     },
-    "backlight": {
-        "format": "{icon} {percent}%",
-        "format-icons": [
-            "",
-            ""
-        ],
-        "scroll-step": 5
+    // BLUETOOTH
+    "bluetooth": {
+        "format": " {status}",
+        "tooltip-format": "{controller_alias}\t{controller_address}\n\n{num_connections} connected",
+        "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{num_connections} connected\n\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
+        "tooltip-format-enumerate-connected-battery": "{device_alias}\t{device_address}\t{device_battery_percentage}%",
+        "on-click": "blueman-manager"
     },
     // NETWORK
     "network": {
         "interval": 5,
         "format": "{ifname}",
-        "format-wifi": "{icon} {essid} {signalStrength}%",
+        "format-wifi": "{icon}  {essid} {signalStrength}%",
         "format-ethernet": "󰈀 {ipaddr}",
         "format-linked": "󰈁 {ifname}",
         "format-disconnected": "󰌙 Disconnected",
@@ -147,34 +147,9 @@
             "tailscale*"
         ]
     },
-    // MPRIS
-    "mpris": {
-        "format": "{player_icon} {status_icon} <i>{title}</i>",
-        "tooltip-format": "ARTIST:   {artist}\nTITLE:    {title}\nALBUM:    {album}\nDURATION: {length}",
-        "player": "playerctld",
-        "max-length": 50,
-        "on-click": "playerctl play-pause",
-        "on-scroll-up": "playerctl next",
-        "on-scroll-down": "playerctl previous",
-        "return-type": "json",
-        "format-paused": "{player_icon} {status_icon} {title}",
-        "ignored-players": [
-            "firefox"
-        ],
-        "player-icons": {
-            "default": "",
-            "spotify": "",
-            "mpv": ""
-        },
-        "status-icons": {
-            "paused": "",
-            "playing": ""
-        },
-        "interval": 5
-    },
-    // BATTERY
     "battery": {
         "full-at": 98,
+        "tooltip-format": "{timeTo}\n{power:.1f}W",
         "format": "{capacity}% {icon}",
         "format-discharging": " {capacity}% {icon}",
         "format-charging": " {capacity}% {icon}",

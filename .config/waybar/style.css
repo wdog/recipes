@@ -1,125 +1,212 @@
+/* ─────────────────────────────────────────────────────
+   Waybar — Pill Minimal  │  matugen colors
+   ───────────────────────────────────────────────────── */
+
 @import "colors.css";
 
 * {
+    font-family: "JetBrainsMono NF", Helvetica, Arial, sans-serif;
+    font-size: 0.75rem;
+    min-height: 0;
     border: none;
     border-radius: 0;
-    font-family: "JetBrainsMono NF", Helvetica, Arial, sans-serif;
-    font-size: 0.9rem;
-    min-height: 0;
 }
+
+/* ── Bar ────────────────────────────────────────────── */
 
 window#waybar {
-    background: transparent;
-    color: @on_surface;
+    background: @transparent;
+    color: @on_surface_variant;
+
 }
 
-tooltip {
-    background: @surface_container_high;
-    border: 1px solid @outline_variant;
-    border-radius: 8px;
-    padding: 4px 8px;
-}
 
-tooltip label {
-    color: @on_surface;
+/* ── Workspaces ─────────────────────────────────────── */
+
+#workspaces {
+    border: 3px solid @primary;
+    background: @surface_container;
+    margin: 0px 2px;
+    padding: 0 2px;
+    border-radius: 6px;
 }
-/* === WORKSPACES === */
-#workspaces {}
 
 #workspaces button {
-    padding: 0 4px 0 12px;
-    margin: 5px 2px;
-    border-radius: 16px;
-    background-color: @on_primary;
-    color: @primary;
-    transition: all 0.3s ease;
-    border: 1px solid @primary;
+    padding: 0 8px;
+    color: @outline;
+    background: transparent;
+    border-radius: 4px;
+    transition: all 100ms ease;
+}
+
+#workspaces button:hover {
+    color: @on_surface;
+    background: @surface_container_high;
 }
 
 #workspaces button.active {
-    background-color: @primary;
-    color: @background;
-    border: 1px solid @background;
-    box-shadow: 0 0 1px alpha(@primary,
-    0.2),
-    0 0 2px alpha(@primary,
-    0.4),
-    0 0 3px alpha(@primary,
-    0.6);
-    font-weight: 800;
+    color: @primary;
+    background: @surface_container_high;
+    font-weight: bold;
 }
 
 #workspaces button.urgent {
-    background-color: @error;
-    color: @background;
-    animation: urgent-blink 1s ease-in-out infinite;
+    color: @error;
 }
 
-#workspaces .taskbar-window {}
-
-@keyframes urgent-blink {
-    0% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: 0.6;
-    }
-
-    100% {
-        opacity: 1;
-    }
-}
-/* === WIDGETS === */
-#custom-music,
-#clock,
-#battery,
-#bluetooth,
-#network,
-#mpris,
-#pulseaudio,
-#backlight,
-#window,
-#tray {
-    padding: 2px 6px;
-    margin: 5px 2px;
-    border-radius: 16px;
-    color: @background;
-    background: @primary;
-    border: 1px solid @background;
+#workspaces button.empty {
+    color: @outline_variant;
 }
 
-#image {
-}
+/* ── Clock ──────────────────────────────────────────── */
 
 #clock {
-    font-weight: 800;
-    padding: 0px 10px;
+    background: @surface_container;
+    color: @on_surface_variant;
+    padding: 0 12px;
+    margin: 4px 2px;
+    border-radius: 6px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
 }
 
-#battery {}
+/* ── Window title ───────────────────────────────────── */
 
-#network {}
-
-#pulseaudio {}
-
-#mpris {
-    font-weight: 700;
+#window {
+    background: @surface_container;
+    padding: 0 10px;
+    margin: 4px 2px;
+    border-radius: 6px;
+    color: @outline;
+    font-style: italic;
 }
 
-#tray {}
+/* ── Right modules — shared ─────────────────────────── */
+
+#custom-music,
+#pulseaudio,
+#backlight,
+#bluetooth,
+#network,
+#battery,
+#tray {
+    background: @surface_container;
+    padding: 0 10px;
+    margin: 4px 2px;
+    border-radius: 6px;
+}
+
+/* ── Music ──────────────────────────────────────────── */
 
 #custom-music {
-    background-color: @on_primary;
-    color: @primary;
-    padding: 0px 16px;
-}
-
-#custom-music.playing {
-  color: @primary;
+    color: @on_surface_variant;
 }
 
 #custom-music.paused {
-  color: @secondary_container;
+    color: @outline;
+    font-style: italic;
 }
 
+/* ── Volume / Audio ─────────────────────────────────── */
+
+#pulseaudio {
+    color: @on_surface_variant;
+}
+
+#pulseaudio.muted {
+    color: @outline_variant;
+}
+
+#pulseaudio.source-muted {
+    color: @outline_variant;
+}
+
+/* ── Backlight ──────────────────────────────────────── */
+
+#backlight {
+    color: @on_surface_variant;
+}
+
+/* ── Bluetooth ──────────────────────────────────────── */
+
+#bluetooth {
+    color: @outline;
+}
+
+#bluetooth.connected {
+    color: @tertiary;
+}
+
+#bluetooth.disabled {
+    color: @outline_variant;
+}
+
+/* ── Network ────────────────────────────────────────── */
+
+#network {
+    color: @on_surface_variant;
+}
+
+#network.disconnected {
+    color: @error;
+}
+
+/* ── Battery ────────────────────────────────────────── */
+
+#battery {
+    color: @on_surface_variant;
+}
+
+#battery.charging,
+#battery.plugged {
+    color: @tertiary;
+}
+
+#battery.warning:not(.charging) {
+    color: @error;
+}
+
+#battery.critical:not(.charging) {
+    color: @error;
+    animation-name: blink-critical;
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+
+@keyframes blink-critical {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0.3;
+    }
+}
+
+/* ── Tray ───────────────────────────────────────────── */
+
+#tray {
+    padding: 0 8px;
+}
+
+#tray>.passive {
+    -gtk-icon-effect: dim;
+}
+
+#tray>.needs-attention {
+    -gtk-icon-effect: highlight;
+}
+
+/* ── Tooltip ────────────────────────────────────────── */
+
+tooltip {
+    background: @surface_container_lowest;
+    border: 1px solid @surface_container_high;
+    border-radius: 4px;
+}
+
+tooltip label {
+    color: @on_surface_variant;
+}
