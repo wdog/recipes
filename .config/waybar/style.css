@@ -166,8 +166,9 @@ window#waybar {
 }
 
 #bluetooth.connected {
+  background: @tertiary_container;
   border: 2px solid @tertiary;
-  color: @tertiary;
+  color: @on_tertiary_container;
 }
 
 #bluetooth.disabled {
@@ -194,6 +195,26 @@ window#waybar {
   color: @on_surface_variant;
 }
 
+#battery.full {
+  border: 2px solid @tertiary;
+  color: @tertiary;
+}
+
+#battery.high {
+  border: 2px solid @secondary;
+  color: @secondary;
+}
+
+#battery.medium {
+  border: 2px solid @outline_variant;
+  color: @on_surface_variant;
+}
+
+#battery.low:not(.charging) {
+  border: 2px solid @secondary_container;
+  color: @on_secondary_container;
+}
+
 #battery.charging,
 #battery.plugged {
   border: 2px solid @tertiary;
@@ -201,8 +222,8 @@ window#waybar {
 }
 
 #battery.warning:not(.charging) {
-  border: 2px solid @error;
-  color: @error;
+  border: 2px solid @error_container;
+  color: @on_error_container;
 }
 
 #battery.critical:not(.charging) {
@@ -243,10 +264,13 @@ window#waybar {
 
 tooltip {
   background: @surface_container_lowest;
-  border: 1px solid @surface_container_high;
+  border: 1px solid @outline_variant;
   border-radius: 12px;
+  padding: 4px;
 }
 
 tooltip label {
   color: @on_surface_variant;
+  font-size: 0.9rem;
+  padding: 4px 10px;
 }
