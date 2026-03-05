@@ -30,24 +30,25 @@ window#waybar {
 }
 
 #workspaces button {
-  padding: 0px 8px;
+  padding: 0px 10px;
   margin: 0px;
   border-radius: 0px;
   color: @outline;
   background: @outline_inverse;
-  transition: all 100ms ease;
+  transition: background 200ms ease, color 200ms ease,
+              border-radius 200ms ease, padding 200ms ease;
 }
 
 #workspaces button:first-child {
-  border-radius: 10px 0 0 10px;
+  border-radius: 8px 0 0 8px;
 }
 
 #workspaces button:last-child {
-  border-radius: 0 10px 10px 0;
+  border-radius: 0 8px 8px 0;
 }
 
 #workspaces button:only-child {
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 #workspaces button:hover {
@@ -55,14 +56,17 @@ window#waybar {
   background: @surface_tint;
 }
 
+/* active — slice effect: pill interna che si espande */
 #workspaces button.active {
   color: @surface;
   background: @surface_tint;
   font-weight: bold;
+
 }
 
 #workspaces button.active:first-child {
   border-radius: 8px 0 0 8px;
+
 }
 
 #workspaces button.active:last-child {
@@ -70,7 +74,7 @@ window#waybar {
 }
 
 #workspaces button.active:only-child {
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 #workspaces button.urgent {
