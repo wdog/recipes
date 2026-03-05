@@ -7,7 +7,7 @@
 
 
 /*-----Surface Transparent Background------*/
-@define-color surface-alpha rgba(15, 21, 17, 0);
+@define-color surface-alpha rgba(15, 21, 17, 0.5);
 
 /*-----All Colors--------*/
 

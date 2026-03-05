@@ -6,11 +6,11 @@ include=~/.config/mako/colors.ini
 border-size=2
 border-radius=5
 font=Sans 13
-padding=10
-margin=20
+padding=20
+outer-margin=20,10
 width=350
 height=400
-anchor=top-right
+anchor=bottom-right
 
 
 # Default timeout for normal priority notifications (1 second)
