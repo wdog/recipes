@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(hyprctl monitors:*)",
+      "Bash(hyprctl workspaces:*)",
+      "Bash(hyprctl dispatch:*)",
+      "Bash(hyprctl reload:*)",
+      "Bash(hyprctl clients:*)",
+      "Bash(for i in 1 2 3 4 5)",
+      "Bash(do hyprctl dispatch moveworkspacetomonitor $i DP-6)",
+      "Bash(done)",
+      "Bash(for:*)",
+      "Bash(do hyprctl dispatch moveworkspacetomonitor $i DP-9)",
+      "Bash(sort:*)",
+      "Bash(chmod:*)",
+      "Bash(~/.config/hypr/scripts/setup-workspaces.sh)",
+      "Bash(pgrep:*)",
+      "Bash(~/.config/waybar/launch.sh)",
+      "Bash(systemctl:*)",
+      "Bash(dpkg:*)",
+      "Bash(journalctl:*)",
+      "Bash(gsettings get:*)",
+      "Bash(cat:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
