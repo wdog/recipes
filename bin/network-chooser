@@ -1,452 +1,210 @@
 #!/usr/bin/env bash
-# network-chooser - Advanced network management menu using fuzzel
-# Inspired by networkmanager_dmenu but written from scratch
-
+# network-chooser — fast network management via fuzzel + nmcli
 set -euo pipefail
 
-# Configuration
-CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/network-chooser"
-CONFIG_FILE="$CONFIG_DIR/config"
-FUZZEL_LINES=20
-FUZZEL_WIDTH=70
+FUZZEL_LINES=18
+FUZZEL_WIDTH=55
 
-# Icons
-ICON_ETHERNET="🔌"
-ICON_VPN_CONNECTED="🔐"
-ICON_VPN_DISCONNECTED="🔓"
-ICON_ACTIVE="🟢"
-ICON_INACTIVE="⚫"
+T=$'\t'
 
-# Load config or use defaults
-[[ -f "$CONFIG_FILE" ]] && source "$CONFIG_FILE"
-
-# Notification wrapper
-send_notification() {
-    local title="$1"
-    local message="$2"
-    local urgency="${3:-normal}"
-    notify-send -u "$urgency" -a "network-chooser" "$title" "$message"
+notify() {
+	notify-send -a "network-chooser" "${1}" "${2:-}" ${3:+-u "$3"}
 }
 
-# Removed unused test_gateway() and test_dns_speed() functions for performance
+# ── Data collection ───────────────────────────────────────────────────────────
 
-# Build active connections section
-build_active_section() {
-    local active_conns="$1"
-    local wifi_signal="$2"
-    local device_ips="$3"
-    local output=""
-    local has_active=0
-
-    # Check active connections
-    while IFS=: read -r name type device state; do
-        has_active=1
-
-        # Extract IP for this device from cached data
-        local ip=""
-        if [[ -n "$device" ]]; then
-            ip=$(grep "^$device:" <<< "$device_ips" | cut -d: -f2 | head -n1)
-        fi
-
-        case "$type" in
-            802-11-wireless)
-                output+="  🟢 WiFi: $name (${wifi_signal:-?}%)"
-                [[ -n "$ip" ]] && output+=" - $ip\n"
-                ;;
-            802-3-ethernet)
-                output+="  🟢 Ethernet: $name"
-                [[ -n "$ip" ]] && output+=" - $ip\n"
-                ;;
-            vpn|wireguard)
-                output+="  🟢 VPN: $name"
-                [[ -n "$ip" ]] && output+=" - $ip\n"
-                ;;
-        esac
-    done <<< "$active_conns"
-
-    if [[ $has_active -eq 0 ]]; then
-        output="  No active connections\n"
-    fi
-
-    echo -e "$output"
+collect_data() {
+	CONNS=$(nmcli -t -f NAME,TYPE,STATE connection show 2>/dev/null)
+	WIFI_STATE=$(nmcli -t -f WIFI general 2>/dev/null)
+	if [[ "$WIFI_STATE" == "enabled" ]]; then
+		WIFI_LIST=$(nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY dev wifi list --rescan no 2>/dev/null)
+	else
+		WIFI_LIST=""
+	fi
 }
 
-# Build WiFi networks section
-build_wifi_section() {
-    local wifi_list="$1"
+# ── Menu builder ──────────────────────────────────────────────────────────────
+# Each line: TAG<TAB>DISPLAY
+# fuzzel called with --with-nth=2: shows only DISPLAY, returns full line.
+# TAG "." = header/separator, ignored by dispatch.
 
-    # Parse WiFi networks - already sorted by signal
-    local seen_ssids=()
-    while IFS=: read -r in_use ssid signal security; do
-        # Skip if we've seen this SSID or if empty
-        [[ " ${seen_ssids[*]} " =~ " ${ssid} " ]] && continue
-        [[ -z "$ssid" ]] && continue
-
-        seen_ssids+=("$ssid")
-
-        # Format authentication type
-        local auth_type="$security"
-        [[ "$auth_type" == "--" ]] && auth_type="Open"
-
-        local active_mark="$ICON_INACTIVE"
-        local status=""
-        if [[ "$in_use" == "*" ]]; then
-            active_mark="$ICON_ACTIVE"
-            status=" [C]"
-        fi
-
-        printf "  %s %-35s %3s%%  %-10s%s\n" "$active_mark" "$ssid" "$signal" "$auth_type" "$status"
-    done <<< "$wifi_list"
-}
-
-# Build VPN connections section
-build_vpn_section() {
-    local all_conns="$1"
-    local active_names="$2"
-    local output=""
-    local has_vpn=0
-    local seen_names=()
-
-    # Get all VPN-type connections
-    while IFS=: read -r name type; do
-        # Skip if we've already seen this name (avoid duplicates)
-        [[ " ${seen_names[*]} " =~ " ${name} " ]] && continue
-        seen_names+=("$name")
-
-        has_vpn=1
-
-        # Check if this VPN is active using cached data
-        if grep -qx "$name" <<< "$active_names"; then
-            output+="  🟢 $ICON_VPN_CONNECTED $name [C]\n"
-        else
-            output+="  ⚫ $ICON_VPN_DISCONNECTED $name\n"
-        fi
-    done <<< "$(grep -E ":vpn$|:wireguard$" <<< "$all_conns")"
-
-    if [[ $has_vpn -eq 0 ]]; then
-        output="  No VPN connections configured\n"
-    fi
-
-    echo -e "$output"
-}
-
-# Build Ethernet connections section
-build_ethernet_section() {
-    local all_conns="$1"
-    local active_names="$2"
-    local output=""
-    local has_eth=0
-
-    while IFS=: read -r name type; do
-        has_eth=1
-
-        # Check if this connection is active using cached data
-        if grep -qx "$name" <<< "$active_names"; then
-            output+="  🟢 $ICON_ETHERNET $name [C]\n"
-        else
-            output+="  ⚫ $ICON_ETHERNET $name\n"
-        fi
-    done <<< "$(grep ":802-3-ethernet$" <<< "$all_conns")"
-
-    if [[ $has_eth -eq 0 ]]; then
-        return
-    fi
-
-    echo -e "$output"
-}
-
-# Main menu builder
 build_menu() {
-    local menu=""
-    local tmp_dir=$(mktemp -d)
+	# ── VPN ───────────────────────────────────────────────────────────────────
+	local vpn_lines
+	vpn_lines=$(echo "$CONNS" | grep -E ":(vpn|wireguard):" | sort -u -t: -k1,1)
+	if [[ -n "$vpn_lines" ]]; then
+		printf ".\t── VPN ──\n"
+		while IFS=: read -r name type state; do
+			if [[ "$state" == "activated" ]]; then
+				printf "vpn:up:%s\t🔑 %s\n" "$name" "$name"
+			else
+				printf "vpn:down:%s\t🔌 %s\n" "$name" "$name"
+			fi
+		done <<<"$vpn_lines"
+		printf ".\t\n"
+	fi
 
-    # Cache ALL nmcli calls at once - this is the KEY optimization
-    local tmp_all_conns="$tmp_dir/all_conns"
-    local tmp_active_conns="$tmp_dir/active_conns"
-    local tmp_active_names="$tmp_dir/active_names"
-    local tmp_wifi_list="$tmp_dir/wifi_list"
-    local tmp_wifi_state="$tmp_dir/wifi_state"
-    local tmp_wifi_signal="$tmp_dir/wifi_signal"
-    local tmp_device_ips="$tmp_dir/device_ips"
+	# ── WiFi ──────────────────────────────────────────────────────────────────
+	printf ".\t── WiFi ──\n"
+	if [[ "$WIFI_STATE" == "enabled" ]]; then
+		printf "action:wifi-off\t  🚫 Disabilita WiFi\n"
+		printf "action:wifi-scan\t  🔍 Scansiona reti\n"
+		if [[ -n "$WIFI_LIST" ]]; then
+			# Active SSIDs from connection state (more reliable than IN-USE field)
+			local active_ssids
+			active_ssids=$(echo "$CONNS" | grep ":802-11-wireless:activated" | cut -d: -f1)
+			local seen_ssids=()
+			while IFS=: read -r in_use ssid signal security; do
+				[[ -z "$ssid" ]] && continue
+				[[ " ${seen_ssids[*]} " =~ " ${ssid} " ]] && continue
+				seen_ssids+=("$ssid")
+				local dot="🔌" state="down"
+				if echo "$active_ssids" | grep -qx "$ssid"; then
+					dot="🛜"
+					state="up"
+				fi
+				local auth="$security"
+				[[ "$auth" == "--" ]] && auth="open"
+				printf "wifi:%s:%s\t  %s %-22s %3d%% %s\n" \
+					"$state" "$ssid" "$dot" "$ssid" "$signal" "$auth"
+			done <<<"$(echo "$WIFI_LIST" | sort -t: -k3 -rn)"
+		fi
+	else
+		printf "action:wifi-on\t  💫 Abilita WiFi\n"
+	fi
+	printf ".\t\n"
 
-    # Run ALL data collection in parallel - only 7 nmcli calls total!
-    {
-        nmcli -t -f NAME,TYPE connection show 2>/dev/null > "$tmp_all_conns"
-    } &
-    local pid_all=$!
+	# ── Ethernet ──────────────────────────────────────────────────────────────
+	local eth_lines
+	eth_lines=$(echo "$CONNS" | grep ":802-3-ethernet:")
+	if [[ -n "$eth_lines" ]]; then
+		printf ".\t── ETHERNET ──\n"
+		while IFS=: read -r name type state; do
+			if [[ "$state" == "activated" ]]; then
+				printf "eth:up:%s\t  📶 %s\n" "$name" "$name"
+			else
+				printf "eth:down:%s\t  ○ %s\n" "$name" "$name"
+			fi
+		done <<<"$eth_lines"
+		printf ".\t\n"
+	fi
 
-    {
-        nmcli -t -f NAME,TYPE,DEVICE,STATE connection show --active 2>/dev/null > "$tmp_active_conns"
-    } &
-    local pid_active=$!
-
-    {
-        nmcli -t -f NAME connection show --active 2>/dev/null > "$tmp_active_names"
-    } &
-    local pid_names=$!
-
-    {
-        nmcli -t -f WIFI general 2>/dev/null > "$tmp_wifi_state"
-    } &
-    local pid_state=$!
-
-    {
-        nmcli -t -f IN-USE,SIGNAL dev wifi 2>/dev/null | grep "^\*" | cut -d: -f2 > "$tmp_wifi_signal"
-    } &
-    local pid_signal=$!
-
-    {
-        if nmcli -t -f WIFI general 2>/dev/null | grep -q "enabled"; then
-            nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY dev wifi list --rescan no 2>/dev/null | sort -t: -k3 -rn > "$tmp_wifi_list"
-        fi
-    } &
-    local pid_wifi=$!
-
-    # {
-    #     # Get IPs for all devices in ONE call - parse the full output using grep/sed
-    #     nmcli device show 2>/dev/null | grep -E '^(GENERAL\.DEVICE|IP4\.ADDRESS\[1\]):' | \
-    #     sed -n 'N;s/GENERAL\.DEVICE:[[:space:]]*\(.*\)\nIP4\.ADDRESS\[1\]:[[:space:]]*\([^/]*\).*/\1:\2/p' | \
-    #     grep -v '^lo:' > "$tmp_device_ips"
-    # } &
-    # local pid_ips=$!
-
-    # Wait for all data collection to complete
-    wait $pid_all $pid_active $pid_names $pid_state $pid_signal $pid_wifi # $pid_ips
-
-    # Read cached data
-    local all_conns=$(cat "$tmp_all_conns")
-    local active_conns=$(cat "$tmp_active_conns")
-    local active_names=$(cat "$tmp_active_names")
-    local wifi_state=$(cat "$tmp_wifi_state")
-    local wifi_signal=$(cat "$tmp_wifi_signal")
-    local wifi_list=$(cat "$tmp_wifi_list" 2>/dev/null)
-    # local device_ips=$(cat "$tmp_device_ips")
-
-    # Now build sections using cached data (no more nmcli calls!)
-    local active_section=$(build_active_section "$active_conns" "$wifi_signal" "")
-    local vpn_section=$(build_vpn_section "$all_conns" "$active_names")
-    local eth_section=$(build_ethernet_section "$all_conns" "$active_names")
-
-    # Cleanup
-    rm -rf "$tmp_dir"
-
-    # Build menu from collected sections
-    menu+="━━━ ACTIVE CONNECTIONS ━━━\n"
-    menu+="$active_section"
-    menu+="\n"
-
-    menu+="━━━ WiFi ━━━\n"
-    if [[ "$wifi_state" == "enabled" ]]; then
-        menu+="  ⛔ Disable WiFi\n"
-        menu+="  🔄 Rescan Networks\n"
-        menu+="\n"
-        menu+="$(build_wifi_section "$wifi_list")"
-    else
-        menu+="  ✅ Enable WiFi\n"
-    fi
-    menu+="\n"
-
-    if [[ -n "$eth_section" ]]; then
-        menu+="━━━ ETHERNET ━━━\n"
-        menu+="$eth_section"
-        menu+="\n"
-    fi
-
-    menu+="━━━ VPN ━━━\n"
-    menu+="$vpn_section"
-    menu+="\n"
-
-    menu+="━━━ ACTIONS ━━━\n"
-    menu+="  ❌ Disconnect All\n"
-    menu+="  ⚙️  Connection Settings\n"
-
-    echo -e "$menu"
+	# ── Azioni ────────────────────────────────────────────────────────────────
+	printf ".\t── AZIONI ──\n"
+	printf "action:reset\t  🔥 riavvia networking\n"
+	printf "action:settings\t  🛠️ impostazioni\n"
 }
 
-# Handle WiFi connection
-handle_wifi_connect() {
-    local selection="$1"
+# ── Handlers ──────────────────────────────────────────────────────────────────
 
-    # Extract SSID (between active mark and signal percentage)
-    local ssid=$(echo "$selection" | sed -E 's/^[[:space:]]*[🟢⚫][[:space:]]+([^[:space:]]+.*[^[:space:]]+)[[:space:]]+[0-9]+%.*/\1/' | xargs)
-
-    # Check if already connected - if so, reconnect
-    if echo "$selection" | grep -q "\[C\]"; then
-        send_notification "WiFi" "Reconnecting to $ssid..."
-        # Disconnect first
-        nmcli connection down id "$ssid" &>/dev/null || true
-        sleep 1
-        # Then reconnect
-        if nmcli connection up id "$ssid" &>/dev/null; then
-            send_notification "WiFi Reconnected" "Reconnected to $ssid"
-            exit 0
-        else
-            send_notification "WiFi Error" "Failed to reconnect to $ssid" "critical"
-            exit 1
-        fi
-    fi
-
-    # Check if password needed (anything except "Open")
-    local needs_password=0
-    echo "$selection" | grep -qvE "Open( \[C\])?$" && needs_password=1
-
-    # Check if connection profile exists
-    if nmcli -t -f NAME connection show 2>/dev/null | grep -qx "$ssid"; then
-        # Activate existing connection
-        if nmcli connection up id "$ssid" &>/dev/null; then
-            send_notification "WiFi Connected" "Connected to $ssid"
-            exit 0
-        else
-            send_notification "WiFi Error" "Failed to connect to $ssid" "critical"
-            exit 1
-        fi
-    else
-        # New connection
-        if [[ $needs_password -eq 1 ]]; then
-            local password=$(echo "" | fuzzel -d -w 40 --password -p "Password for $ssid: " 2>/dev/null)
-            [[ -z "$password" ]] && exit 0
-
-            if nmcli device wifi connect "$ssid" password "$password" &>/dev/null; then
-                send_notification "WiFi Connected" "Connected to $ssid"
-                exit 0
-            else
-                send_notification "WiFi Error" "Failed to connect to $ssid" "critical"
-                exit 1
-            fi
-        else
-            if nmcli device wifi connect "$ssid" &>/dev/null; then
-                send_notification "WiFi Connected" "Connected to $ssid"
-                exit 0
-            else
-                send_notification "WiFi Error" "Failed to connect to $ssid" "critical"
-                exit 1
-            fi
-        fi
-    fi
+handle_wifi() {
+	local state="$1" ssid="$2"
+	if [[ "$state" == "up" ]]; then
+		nmcli connection down id "$ssid" &>/dev/null &&
+			notify "WiFi" "Disconnesso da $ssid" ||
+			notify "WiFi" "Errore: $ssid" critical
+		return
+	fi
+	if nmcli -t -f NAME connection show 2>/dev/null | grep -qx "$ssid"; then
+		nmcli connection up id "$ssid" &>/dev/null &&
+			notify "WiFi" "Connesso: $ssid" ||
+			notify "WiFi" "Errore: $ssid" critical
+		return
+	fi
+	local security
+	security=$(echo "$WIFI_LIST" | grep -m1 ":${ssid}:" | cut -d: -f4)
+	if [[ "$security" != "--" ]] && [[ -n "$security" ]]; then
+		local pwd
+		pwd=$(printf "" | fuzzel -d -w 40 --password -p "Password $ssid: " 2>/dev/null) || true
+		[[ -z "$pwd" ]] && return
+		nmcli device wifi connect "$ssid" password "$pwd" &>/dev/null &&
+			notify "WiFi" "Connesso: $ssid" ||
+			notify "WiFi" "Errore: $ssid" critical
+	else
+		nmcli device wifi connect "$ssid" &>/dev/null &&
+			notify "WiFi" "Connesso: $ssid" ||
+			notify "WiFi" "Errore: $ssid" critical
+	fi
 }
 
-# Handle VPN toggle
-handle_vpn_toggle() {
-    local selection="$1"
+dispatch() {
+	local sel="$1"
+	# Tag is the first column (before TAB)
+	local tag="${sel%%$T*}"
+	[[ "$tag" == "." ]] && return # header/separator, ignore
 
-    # Extract VPN name
-    local vpn_name=$(echo "$selection" | sed -E 's/^[[:space:]]*[🟢⚫][[:space:]]*[^[:space:]]+[[:space:]]+([^[]+).*/\1/' | xargs)
+	local kind="${tag%%:*}"   # vpn / wifi / eth / action
+	local rest="${tag#*:}"    # state:name  or  subaction
+	local state="${rest%%:*}" # up / down / wifi-off / reset / ...
+	local name="${rest#*:}"   # connection name or ssid
 
-    if echo "$selection" | grep -q "\[C\]"; then
-        # If connected, reconnect
-        send_notification "VPN" "Reconnecting to $vpn_name..."
-        # Disconnect first
-        nmcli connection down id "$vpn_name" &>/dev/null || true
-        sleep 1
-        # Then reconnect
-        if nmcli connection up id "$vpn_name" &>/dev/null; then
-            send_notification "VPN Reconnected" "Reconnected to $vpn_name"
-            exit 0
-        else
-            send_notification "VPN Error" "Failed to reconnect $vpn_name" "critical"
-            exit 1
-        fi
-    else
-        # Connect
-        if nmcli connection up id "$vpn_name" &>/dev/null; then
-            send_notification "VPN Connected" "$vpn_name"
-            exit 0
-        else
-            send_notification "VPN Error" "Failed to connect $vpn_name" "critical"
-            exit 1
-        fi
-    fi
+	case "$kind" in
+	vpn)
+		if [[ "$state" == "up" ]]; then
+			nmcli connection down id "$name" &>/dev/null &&
+				notify "VPN" "Disconnesso: $name" ||
+				notify "VPN" "Errore: $name" critical
+		else
+			notify "VPN" "Connessione a $name..."
+			nmcli connection up id "$name" &>/dev/null &&
+				notify "VPN" "Connesso: $name" ||
+				notify "VPN" "Errore: $name" critical
+		fi
+		;;
+	wifi)
+		handle_wifi "$state" "$name"
+		;;
+	eth)
+		if [[ "$state" == "up" ]]; then
+			nmcli connection down id "$name" &>/dev/null &&
+				notify "ETH" "Disconnesso: $name" ||
+				notify "ETH" "Errore: $name" critical
+		else
+			nmcli connection up id "$name" &>/dev/null &&
+				notify "ETH" "Connesso: $name" ||
+				notify "ETH" "Errore: $name" critical
+		fi
+		;;
+	action)
+		case "$state" in
+		wifi-on)
+			nmcli radio wifi on
+			notify "WiFi" "Abilitato"
+			;;
+		wifi-off)
+			nmcli radio wifi off
+			notify "WiFi" "Disabilitato"
+			;;
+		wifi-scan)
+			notify "WiFi" "Scansione..."
+			nmcli device wifi rescan &>/dev/null || true
+			;;
+		reset)
+			nmcli networking off && sleep 1 && nmcli networking on
+			notify "Rete" "Reset completato"
+			;;
+		settings)
+			if command -v nm-connection-editor &>/dev/null; then
+				nm-connection-editor &
+			elif command -v nmtui &>/dev/null; then
+				"${TERMINAL:-xterm}" -e nmtui &
+			fi
+			;;
+		esac
+		;;
+	esac
 }
 
-# Handle Ethernet toggle
-handle_ethernet_toggle() {
-    local selection="$1"
+# ── Main ──────────────────────────────────────────────────────────────────────
 
-    # Extract connection name
-    local conn_name=$(echo "$selection" | sed -E 's/^[[:space:]]*[🟢⚫][[:space:]]*[^[:space:]]+[[:space:]]+([^[]+).*/\1/' | xargs)
-
-    if echo "$selection" | grep -q "\[CONNECTED\]"; then
-        if nmcli connection down id "$conn_name" &>/dev/null; then
-            send_notification "Ethernet Disconnected" "$conn_name"
-            exit 0
-        else
-            send_notification "Ethernet Error" "Failed to disconnect $conn_name" "critical"
-            exit 1
-        fi
-    else
-        if nmcli connection up id "$conn_name" &>/dev/null; then
-            send_notification "Ethernet Connected" "$conn_name"
-            exit 0
-        else
-            send_notification "Ethernet Error" "Failed to connect $conn_name" "critical"
-            exit 1
-        fi
-    fi
-}
-
-# Main loop
-main() {
-    while true; do
-        local selection=$(build_menu | fuzzel -d -w "$FUZZEL_WIDTH" -l "$FUZZEL_LINES" -p "Network: " 2>/dev/null)
-
-        # Exit if nothing selected
-        [[ -z "$selection" ]] && exit 0
-
-        # Handle selection
-        case "$selection" in
-            *"Enable WiFi"*)
-                nmcli radio wifi on
-                send_notification "WiFi" "WiFi enabled"
-                sleep 1
-                nmcli device wifi rescan &>/dev/null || true
-                ;;
-            *"Disable WiFi"*)
-                nmcli radio wifi off
-                send_notification "WiFi" "WiFi disabled"
-                ;;
-            *"Rescan Networks"*)
-                send_notification "WiFi" "Rescanning..."
-                nmcli device wifi rescan &>/dev/null || true
-                sleep 2
-                ;;
-            *"Disconnect All"*)
-                nmcli networking off
-                sleep 1
-                nmcli networking on
-                send_notification "Network" "All connections reset"
-                ;;
-            *"Connection Settings"*)
-                if command -v nm-connection-editor &>/dev/null; then
-                    nm-connection-editor &
-                elif command -v nmtui &>/dev/null; then
-                    ${TERMINAL:-xterm} -e nmtui &
-                fi
-                exit 0
-                ;;
-            *"$ICON_VPN_CONNECTED"*|*"$ICON_VPN_DISCONNECTED"*)
-                handle_vpn_toggle "$selection"
-                ;;
-            *"$ICON_ETHERNET"*)
-                handle_ethernet_toggle "$selection"
-                ;;
-            *"%  WPA"*|*"%  WEP"*|*"%  Open"*|*"%  WPA [C]"*|*"%  WEP [C]"*|*"%  Open [C]"*)
-                # WiFi network selection (ends with auth type, optionally [C])
-                handle_wifi_connect "$selection"
-                ;;
-            "━━━"*|*"No active"*|*"No VPN"*|*"WiFi is disabled"*|*"🟢 WiFi:"*|*"🟢 Ethernet:"*|*"🟢 VPN:"*|*"    "*)
-                # Ignore headers, info lines, and active connections (read-only info)
-                continue
-                ;;
-        esac
-    done
-}
-
-# Check dependencies
 for cmd in nmcli fuzzel notify-send; do
-    if ! command -v "$cmd" &>/dev/null; then
-        echo "Error: $cmd is required but not installed" >&2
-        exit 1
-    fi
+	command -v "$cmd" &>/dev/null || {
+		echo "Errore: $cmd non trovato" >&2
+		exit 1
+	}
 done
 
-main
+collect_data
+selection=$(build_menu | fuzzel -d --with-nth=2 -w "$FUZZEL_WIDTH" -l "$FUZZEL_LINES" -p "rete: " 2>/dev/null) || true
+[[ -z "$selection" ]] && exit 0
+dispatch "$selection"
