@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 # network-chooser — fast network management via fuzzel + nmcli
+#
+# Author:      wdog <wdog666@gmail.com>
+# Description: Interactive network manager launcher using fuzzel as a dmenu-style
+#              picker and nmcli as the backend. Supports WiFi, Ethernet, and VPN
+#              connections with connect/disconnect toggle and desktop notifications.
+#
 set -euo pipefail
 
 FUZZEL_LINES=18
@@ -38,7 +44,7 @@ build_menu() {
 			if [[ "$state" == "activated" ]]; then
 				printf "vpn:up:%s\t🔑 %s\n" "$name" "$name"
 			else
-				printf "vpn:down:%s\t🔌 %s\n" "$name" "$name"
+				printf "vpn:down:%s\t🛡️ %s\n" "$name" "$name"
 			fi
 		done <<<"$vpn_lines"
 		printf ".\t\n"
@@ -47,8 +53,8 @@ build_menu() {
 	# ── WiFi ──────────────────────────────────────────────────────────────────
 	printf ".\t── WiFi ──\n"
 	if [[ "$WIFI_STATE" == "enabled" ]]; then
-		printf "action:wifi-off\t  🚫 Disabilita WiFi\n"
-		printf "action:wifi-scan\t  🔍 Scansiona reti\n"
+		printf "action:wifi-off\t🚫 Disable WiFi\n"
+		printf "action:wifi-scan\t🔍 Scan networks\n"
 		if [[ -n "$WIFI_LIST" ]]; then
 			# Active SSIDs from connection state (more reliable than IN-USE field)
 			local active_ssids
@@ -58,19 +64,19 @@ build_menu() {
 				[[ -z "$ssid" ]] && continue
 				[[ " ${seen_ssids[*]} " =~ " ${ssid} " ]] && continue
 				seen_ssids+=("$ssid")
-				local dot="🔌" state="down"
+				local dot="📡" state="down"
 				if echo "$active_ssids" | grep -qx "$ssid"; then
-					dot="🛜"
+					dot="✅"
 					state="up"
 				fi
 				local auth="$security"
 				[[ "$auth" == "--" ]] && auth="open"
-				printf "wifi:%s:%s\t  %s %-22s %3d%% %s\n" \
+				printf "wifi:%s:%s\t%s %-22s %3d%% %s\n" \
 					"$state" "$ssid" "$dot" "$ssid" "$signal" "$auth"
 			done <<<"$(echo "$WIFI_LIST" | sort -t: -k3 -rn)"
 		fi
 	else
-		printf "action:wifi-on\t  💫 Abilita WiFi\n"
+		printf "action:wifi-on\t✴️ Enable WiFi\n"
 	fi
 	printf ".\t\n"
 
@@ -81,18 +87,18 @@ build_menu() {
 		printf ".\t── ETHERNET ──\n"
 		while IFS=: read -r name type state; do
 			if [[ "$state" == "activated" ]]; then
-				printf "eth:up:%s\t  📶 %s\n" "$name" "$name"
+				printf "eth:up:%s\t📶 %s\n" "$name" "$name"
 			else
-				printf "eth:down:%s\t  ○ %s\n" "$name" "$name"
+				printf "eth:down:%s\t○ %s\n" "$name" "$name"
 			fi
 		done <<<"$eth_lines"
 		printf ".\t\n"
 	fi
 
 	# ── Azioni ────────────────────────────────────────────────────────────────
-	printf ".\t── AZIONI ──\n"
-	printf "action:reset\t  🔥 riavvia networking\n"
-	printf "action:settings\t  🛠️ impostazioni\n"
+	printf ".\t── ACTIONS ──\n"
+	printf "action:reset\t🔥 Restart networking\n"
+	printf "action:settings\t🛠️ Settings\n"
 }
 
 # ── Handlers ──────────────────────────────────────────────────────────────────
@@ -101,14 +107,14 @@ handle_wifi() {
 	local state="$1" ssid="$2"
 	if [[ "$state" == "up" ]]; then
 		nmcli connection down id "$ssid" &>/dev/null &&
-			notify "WiFi" "Disconnesso da $ssid" ||
-			notify "WiFi" "Errore: $ssid" critical
+			notify "WiFi" "Disconnected from $ssid" ||
+			notify "WiFi" "Error: $ssid" critical
 		return
 	fi
 	if nmcli -t -f NAME connection show 2>/dev/null | grep -qx "$ssid"; then
 		nmcli connection up id "$ssid" &>/dev/null &&
-			notify "WiFi" "Connesso: $ssid" ||
-			notify "WiFi" "Errore: $ssid" critical
+			notify "WiFi" "Connected: $ssid" ||
+			notify "WiFi" "Error: $ssid" critical
 		return
 	fi
 	local security
@@ -118,12 +124,12 @@ handle_wifi() {
 		pwd=$(printf "" | fuzzel -d -w 40 --password -p "Password $ssid: " 2>/dev/null) || true
 		[[ -z "$pwd" ]] && return
 		nmcli device wifi connect "$ssid" password "$pwd" &>/dev/null &&
-			notify "WiFi" "Connesso: $ssid" ||
-			notify "WiFi" "Errore: $ssid" critical
+			notify "WiFi" "Connected: $ssid" ||
+			notify "WiFi" "Error: $ssid" critical
 	else
 		nmcli device wifi connect "$ssid" &>/dev/null &&
-			notify "WiFi" "Connesso: $ssid" ||
-			notify "WiFi" "Errore: $ssid" critical
+			notify "WiFi" "Connected: $ssid" ||
+			notify "WiFi" "Error: $ssid" critical
 	fi
 }
 
@@ -142,13 +148,13 @@ dispatch() {
 	vpn)
 		if [[ "$state" == "up" ]]; then
 			nmcli connection down id "$name" &>/dev/null &&
-				notify "VPN" "Disconnesso: $name" ||
-				notify "VPN" "Errore: $name" critical
+				notify "VPN" "Disconnected: $name" ||
+				notify "VPN" "Error: $name" critical
 		else
-			notify "VPN" "Connessione a $name..."
+			notify "VPN" "Connecting to $name..."
 			nmcli connection up id "$name" &>/dev/null &&
-				notify "VPN" "Connesso: $name" ||
-				notify "VPN" "Errore: $name" critical
+				notify "VPN" "Connected: $name" ||
+				notify "VPN" "Error: $name" critical
 		fi
 		;;
 	wifi)
@@ -157,31 +163,31 @@ dispatch() {
 	eth)
 		if [[ "$state" == "up" ]]; then
 			nmcli connection down id "$name" &>/dev/null &&
-				notify "ETH" "Disconnesso: $name" ||
-				notify "ETH" "Errore: $name" critical
+				notify "ETH" "Disconnected: $name" ||
+				notify "ETH" "Error: $name" critical
 		else
 			nmcli connection up id "$name" &>/dev/null &&
-				notify "ETH" "Connesso: $name" ||
-				notify "ETH" "Errore: $name" critical
+				notify "ETH" "Connected: $name" ||
+				notify "ETH" "Error: $name" critical
 		fi
 		;;
 	action)
 		case "$state" in
 		wifi-on)
 			nmcli radio wifi on
-			notify "WiFi" "Abilitato"
+			notify "WiFi" "Enabled"
 			;;
 		wifi-off)
 			nmcli radio wifi off
-			notify "WiFi" "Disabilitato"
+			notify "WiFi" "Disabled"
 			;;
 		wifi-scan)
-			notify "WiFi" "Scansione..."
+			notify "WiFi" "Scanning..."
 			nmcli device wifi rescan &>/dev/null || true
 			;;
 		reset)
 			nmcli networking off && sleep 1 && nmcli networking on
-			notify "Rete" "Reset completato"
+			notify "Network" "Reset done"
 			;;
 		settings)
 			if command -v nm-connection-editor &>/dev/null; then
@@ -205,6 +211,6 @@ for cmd in nmcli fuzzel notify-send; do
 done
 
 collect_data
-selection=$(build_menu | fuzzel -d --with-nth=2 -w "$FUZZEL_WIDTH" -l "$FUZZEL_LINES" -p "rete: " 2>/dev/null) || true
+selection=$(build_menu | fuzzel -d --with-nth=2 -w "$FUZZEL_WIDTH" -l "$FUZZEL_LINES" -p "network: " 2>/dev/null) || true
 [[ -z "$selection" ]] && exit 0
 dispatch "$selection"
