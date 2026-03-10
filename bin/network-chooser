@@ -205,7 +205,7 @@ dispatch() {
 
 for cmd in nmcli fuzzel notify-send; do
 	command -v "$cmd" &>/dev/null || {
-		echo "Errore: $cmd non trovato" >&2
+		echo "Error: $cmd not found" >&2
 		exit 1
 	}
 done
