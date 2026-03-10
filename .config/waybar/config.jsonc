@@ -89,7 +89,7 @@
     "custom/music": {
         "format": "{}",
         "return-type": "json",
-        "exec": "waybar-module-music --format '%icon% %title%' --marquee --title-width 30 --effect-speed 250",
+        "exec": "waybar-module-music --format '%icon% %artist% - %title%' --marquee --title-width 30 --effect-speed 250",
         "tooltip-format": "{}",
         "tooltip": true,
         "on-click": "playerctl play-pause",
