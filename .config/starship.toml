@@ -1,7 +1,6 @@
 palette = "gruvbox_rainbow"
 
 format = """
-[](color_orange)\
 $username\
 [](bg:color_yellow fg:color_orange)\
 $directory\
@@ -11,7 +10,9 @@ $git_commit\
 $git_status\
 $git_metrics\
 $git_state\
-[](fg:color_aqua)\
+[](fg:color_aqua bg:color_blue)\
+$python\
+[](fg:color_blue)\
 $line_break$character"""
 
 [palettes.gruvbox_rainbow]
@@ -48,62 +49,68 @@ truncation_symbol = "…/"
 truncate_to_repo = false
 
 [directory.substitutions]
-"Documents" = "󰈙 "
-"Downloads" = "󰇚 "
-"Music" = "󰎆 "
-"Pictures" = "󰉏 "
-"Videos" = "󰕧 "
-"Desktop" = "󰚝 "
-"Projects" = "󱁉 "
-"~" = "󰋜 "
-"tmp" = "󰪺 "
-"tests" = "󰙨 "
-"build" = "󰜬 "
-"node_modules" = "󰎙 "
-".git" = "󰊢 "
-".github" = "󰊤 "
-"images" = "󰋩 "
-"fonts" = "󰛖 "
+"Documents" = "📄 "
+"Downloads" = "📥 "
+"Music" = "🎵 "
+"Pictures" = "🖼️ "
+"Videos" = "🎬 "
+"Desktop" = "🖥️ "
+"Projects" = "📁 "
+"~" = "🏠 "
+"tmp" = "🗑️ "
+"tests" = "🧪 "
+"build" = "🔨 "
+"node_modules" = "📦 "
+".git" = "🔀 "
+".github" = "🐙 "
+"images" = "🖼️ "
+"fonts" = "🔤 "
 
 [git_state]
 format = '[\($state( $progress_current of $progress_total)\)]($style) '
-cherry_pick = '[🍒 PICKING](bold red)'
+cherry_pick = '[ PICKING](bold red)'
 
 [git_status]
 style = 'bg:color_aqua fg:color_fg0'
-format = '[ $all_status$ahead_behind]($style)'
-modified = '[ +$count ](fg:color_yellow bg:color_aqua)'
-untracked = '[ ?$count](fg:color_orange bg:color_aqua)'
-deleted = '[ -$count](fg:color_red bg:color_aqua)'
-staged = '[ ++$count](fg:color_green bg:color_aqua)'
-conflicted = '[  $count](fg:color_red bg:color_aqua)'
-stashed = '[  $count](fg:color_purple bg:color_aqua)'
-renamed = '[  $count](fg:color_orange bg:color_aqua)'
-ahead = '[ ⇡$count](fg:color_green bg:color_aqua)'
-behind = '[ ⇣$count](fg:color_red bg:color_aqua)'
-diverged = '[ ⇕${ahead_count} ${behind_count}](fg:color_orange bg:color_aqua)'
+format = '[ $all_status$ahead_behind]($style)'
+modified = '[ +$count ](fg:color_yellow bg:color_aqua)'
+untracked = '[ $count](fg:color_orange bg:color_aqua)'
+deleted = '[ -$count](fg:color_red bg:color_aqua)'
+staged = '[ ++$count](fg:color_green bg:color_aqua)'
+conflicted = '[ $count](fg:color_red bg:color_aqua)'
+stashed = '[ $count](fg:color_purple bg:color_aqua)'
+renamed = '[ $count](fg:color_orange bg:color_aqua)'
+ahead = '[  $count](fg:color_green bg:color_aqua)'
+behind = '[  $count](fg:color_red bg:color_aqua)'
+diverged = '[  ${ahead_count}  ${behind_count}](fg:color_orange bg:color_aqua)'
 
 [git_metrics]
 disabled = false
-format = '[   ](fg:color_fg0 bg:color_aqua)[+$added](fg:color_green bg:color_aqua)[ -$deleted ](fg:color_red bg:color_aqua)'
+format = '[  ](fg:color_fg0 bg:color_aqua)[+$added](fg:color_green bg:color_aqua)[ -$deleted ](fg:color_red bg:color_aqua)'
 added_style = ''
 deleted_style = ''
 
 [git_branch]
-symbol = ''
+symbol = ' '
 style = 'bg:color_aqua fg:color_fg0'
 # format = '[ $symbol $branch ]($style)'
-format = '[ $symbol $branch(:$remote_branch)]($style)'
+format = '[ $symbol$branch(:$remote_branch)]($style)'
 
 [git_commit]
 # format = '[$hash $tag ]($style)'
-format = '[@$hash ]($style)'
+format = '[  $hash ]($style)'
 commit_hash_length = 5
 only_detached = false
-tag_symbol = '🔖 '
+tag_symbol = ' '
 style = 'bg:color_aqua fg:color_blue'
 
 [sudo]
 style = 'bg:#2C3E50'
 symbol = '👿 '
 disabled = true
+
+[python]
+symbol = '🐍'
+style = 'bg:color_blue fg:color_fg0'
+format = '[ $symbol$pyenv_prefix($version)(\($virtualenv\)) ]($style)'
+pyenv_version_name = false
