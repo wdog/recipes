@@ -25,7 +25,7 @@ dynamic_title = true
 decorations_theme_variant = "Dark"
 opacity = 0.9
 blur = true
-padding = { x = 10, y = 10 }
+padding = { x = 14, y = 12 }
 decorations = "Full"
 dynamic_padding = false
 
@@ -48,7 +48,7 @@ multiplier = 3
 # Default: true
 
 [font]
-size = 16
+size = 17
 # normal = { family = "Iosevka Nerd Font Mono", style = "Regular" }
 # bold = { family = "Iosevka Nerd Font Mono", style = "Bold" }
 # italic = { family = "Fisa Code", style = "Italic" }
@@ -60,7 +60,8 @@ normal = { family = "IosevkaTerm Nerd Font", style = "Regular" }
 bold = {  style = "Bold" }
 italic = { style = "Italic" }
 bold_italic = { style = "Bold Italic" }
-offset = { x = 0, y = 0 }
+offset = { x = 0, y = 1 }
+glyph_offset = { x = 0, y = 0 }
 builtin_box_drawing = true
 
 
@@ -110,8 +111,8 @@ save_to_clipboard = true
 style = { shape = "Beam", blinking = "Always" }
 unfocused_hollow = true
 thickness = 0.15
-blink_interval = 150
-blink_timeout = 2
+blink_interval = 500
+blink_timeout = 5
 
 
 
@@ -132,7 +133,13 @@ hide_when_typing = true
 
 [keyboard]
 bindings = [
-  { key = "PageUp",   mods = "Shift", action = "ScrollPageUp" },
-  { key = "PageDown", mods = "Shift", action = "ScrollPageDown" },
+  { key = "PageUp",   mods = "Shift",        action = "ScrollPageUp" },
+  { key = "PageDown", mods = "Shift",        action = "ScrollPageDown" },
+  { key = "C",        mods = "Control|Shift", action = "Copy" },
+  { key = "V",        mods = "Control|Shift", action = "Paste" },
+  { key = "F",        mods = "Control|Shift", action = "SearchForward" },
+  { key = "Plus",     mods = "Control",       action = "IncreaseFontSize" },
+  { key = "Minus",    mods = "Control",       action = "DecreaseFontSize" },
+  { key = "Key0",     mods = "Control",       action = "ResetFontSize" },
 ]
 
