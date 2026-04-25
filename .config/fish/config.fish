@@ -18,6 +18,7 @@ starship init fish | source
 
 
 alias claude="~/.local/bin/claude"
+alias docs="zensical serve -f ~/.config/mkdocs/zensical.toml"
 
 # bun
 set --export BUN_INSTALL "$HOME/.bun"
