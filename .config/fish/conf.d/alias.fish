@@ -70,8 +70,9 @@ alias dnl "docker network ls"
 alias dnp "docker network prune"
 
 
-alias lint "docker-compose exec -u 1000 app ./vendor/bin/duster lint -u pint -v"
-alias fix "docker-compose exec -u 1000 app ./vendor/bin/duster fix -u pint -v"
+alias lint "docker-compose exec -u 1000 app ./vendor/bin/duster lint"
+alias fix "docker-compose exec -u 1000 app ./vendor/bin/duster fix -u pint"
+alias stan "docker-compose exec -u 1000 app ./vendor/bin/phpstan analyze"
 
 alias dvl "docker volume ls"
 alias dvp "docker volume prune"
