@@ -9,20 +9,30 @@
 | Shortcut | Azione |
 |---|---|
 | `ALT + Enter` | Terminale |
-| `ALT + D` | Launcher (fuzzel/wofi) |
+| `ALT + D` | Launcher (fuzzel) |
 | `ALT + N` | Network chooser |
-| `ALT + R` | Riavvia Waybar |
 | `SUPER + V` | Clipboard history |
+| `ALT + R` | Riavvia Waybar |
 | `SUPER + W` | Wallpaper picker |
 | `SUPER + L` | Blocca schermo |
 | `SUPER + Escape` | Power menu |
 | `SUPER + R` | Ricarica Hyprland config |
-| `SUPER + M` | Esci da Hyprland |
+| `SUPER + F1` | Cheatsheet keybinding |
 | `Print` | Screenshot area (slurp → swappy) |
 
 ---
 
-## Finestre — Generali (tutti i layout)
+## Focus Navigation
+
+| Shortcut | Azione |
+|---|---|
+| `ALT + ←↑↓→` | Sposta focus |
+| `ALT + Tab` | Cicla finestre workspace |
+| `SHIFT + Tab` | Back and forth ultime 2 finestre |
+
+---
+
+## Finestre
 
 | Shortcut | Azione |
 |---|---|
@@ -31,28 +41,28 @@
 | `ALT + T` | Float + centra + 50% dimensione |
 | `ALT + +` | Ingrandisci finestra (+50px) |
 | `ALT + -` | Riduci finestra (-50px) |
-| `ALT + ←↑↓→` | Sposta focus |
-| `ALT + SHIFT + ←↑↓→` | Sposta finestra nel layout |
-| `ALT + Tab` | Cicla finestre del workspace (avanti) |
-| `ALT + SHIFT + Tab` | Cicla finestre del workspace (indietro) |
-| `SHIFT + Tab` | Back and forth tra ultime 2 finestre |
-| `ALT + O` | Focus monitor successivo |
+| `ALT + SHIFT + ←→` | Sposta finestra al workspace relativo -1/+1 |
+| `ALT + SHIFT + ↑↓` | Sposta finestra su/giù nel layout |
 | `ALT + I` | Swap con finestra successiva |
-| `SUPER + drag LMB` | Muovi finestra con mouse |
-| `SUPER + drag RMB` | Ridimensiona finestra con mouse |
+| `ALT + SHIFT + J` | Swap con precedente (mantieni focus) |
+| `ALT + SHIFT + K` | Swap con successiva (mantieni focus) |
+| `ALT + SHIFT + M` | Swap finestra attiva con master |
+| `ALT + SUPER + ↑` | Swap con finestra sopra |
+| `ALT + SUPER + ↓` | Swap con finestra sotto |
+| `ALT + CTRL + ↑` | Muovi finestra sinistra+basso |
+| `ALT + CTRL + ↓` | Muovi finestra destra+alto |
+| `ALT + drag LMB` | Muovi finestra con mouse |
+| `ALT + drag RMB` | Ridimensiona finestra con mouse |
 
 ---
 
-## Layout — Cambio rapido
+## Layout — Switch
 
 | Shortcut | Azione |
 |---|---|
-| `ALT + SUPER + 1` | Dwindle auto-split |
-| `ALT + SUPER + 2` | Master verticale (master a sinistra) |
-| `ALT + SUPER + 3` | Master orizzontale (master in alto, 70%) |
-| `ALT + SUPER + 4` | **Scrolling** (nastro orizzontale) |
-| `ALT + SUPER + D` | Dwindle (senza preset) |
-| `ALT + SUPER + M` | Master (senza preset) |
+| `ALT + SUPER + 1` | Dwindle (reset valori default) |
+| `ALT + SUPER + 2` | Master verticale (master a sinistra, mfact 70%) |
+| `ALT + SUPER + 3` | Scrolling |
 
 ---
 
@@ -60,13 +70,8 @@
 
 | Shortcut | Azione |
 |---|---|
-| `ALT + J` | Inverti split finestra attiva (vert ↔ oriz) |
-| `ALT + P` | Pseudo-tile (fluttua nel tile senza rompere layout) |
-| `ALT + SUPER + H` | Forza split a sinistra/sopra |
-| `ALT + SUPER + L` | Forza split a destra/sotto |
-| `ALT + SUPER + A` | Split automatico (segue cursore) |
-| `ALT + SHIFT + J` | Swap con finestra precedente (mantieni focus) |
-| `ALT + SHIFT + K` | Swap con finestra successiva (mantieni focus) |
+| `ALT + J` | Inverti split (vert ↔ oriz) |
+| `ALT + P` | Pseudo-tile |
 
 ---
 
@@ -76,24 +81,9 @@
 |---|---|
 | `ALT + SUPER + K` | Ruota: slave successivo → master |
 | `ALT + SUPER + J` | Ruota: slave precedente → master |
-| `ALT + SUPER + ,` | Aggiungi finestra master |
-| `ALT + SUPER + .` | Rimuovi finestra master |
-| `ALT + SUPER + O` | Orientamento verticale (master a sinistra) |
-| `ALT + SUPER + I` | Orientamento orizzontale (master in alto) |
-| `ALT + SHIFT + M` | Swap finestra attiva con master |
-| `ALT + CTRL + ↑` | Sposta finestra a sinistra+basso |
-| `ALT + CTRL + ↓` | Sposta finestra a destra+alto |
-| `ALT + SUPER + ↑` | Swap con finestra sopra |
-| `ALT + SUPER + ↓` | Swap con finestra sotto |
-
----
-
-## Layout — Scrolling
-
-| Shortcut | Azione |
-|---|---|
-| `ALT + SHIFT + ←→` | Sposta colonna nel nastro |
-| `ALT + ←→` | Sposta focus tra colonne |
+| `ALT + SUPER + H` | Orientamento verticale (master a sinistra) |
+| `ALT + SUPER + L` | Orientamento orizzontale (master in alto) |
+| `ALT + SUPER + M` | Swap finestra attiva con master |
 
 ---
 
@@ -105,18 +95,6 @@
 | `ALT + SHIFT + 1…0` | Sposta finestra al workspace 1–10 |
 | `ALT + CTRL + →` | Workspace successivo (esistenti) |
 | `ALT + CTRL + ←` | Workspace precedente (esistenti) |
-| `SUPER + SHIFT + →` | Sposta finestra al workspace relativo +1 |
-| `SUPER + SHIFT + ←` | Sposta finestra al workspace relativo -1 |
-
----
-
-## Monitor
-
-| Shortcut | Azione |
-|---|---|
-| `ALT + O` | Focus monitor successivo |
-| `ALT + CTRL + SHIFT + →` | Focus monitor successivo |
-| `ALT + CTRL + SHIFT + ←` | Focus monitor precedente |
 
 ---
 
@@ -130,5 +108,6 @@
 | `XF86AudioMicMute` | Mute microfono |
 | `XF86MonBrightnessUp` | Luminosità +5% |
 | `XF86MonBrightnessDown` | Luminosità -5% |
-| `XF86AudioNext/Prev` | Traccia successiva/precedente |
+| `XF86AudioNext` | Traccia successiva |
+| `XF86AudioPrev` | Traccia precedente |
 | `XF86AudioPlay/Pause` | Play/Pause |
