@@ -16,6 +16,7 @@
     ],
     "modules-right": [
         "custom/music",
+        "disk",
         "pulseaudio",
         "bluetooth",
         // "backlight",
@@ -95,6 +96,12 @@
         "on-click": "playerctl play-pause",
         "on-scroll-up": "playerctl next",
         "on-scroll-down": "playerctl previous"
+    },
+    "disk": {
+        "interval": 30,
+        "format": "󰋊 {percentage_used}%",
+        "path": "/",
+        "tooltip-format": "{path}\n{used} / {total} ({percentage_used}%)\nLibero: {free}"
     },
     "pulseaudio": {
         "scroll-step": 5,

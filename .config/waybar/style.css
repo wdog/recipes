@@ -110,6 +110,7 @@ window#waybar {
 /* ── Right modules — shared ─────────────────────────── */
 
 #custom-music,
+#disk,
 #pulseaudio,
 #backlight,
 #bluetooth,
@@ -133,6 +134,13 @@ window#waybar {
   border: 2px solid @outline_variant;
   color: @outline;
   font-style: italic;
+}
+
+/* ── Disk ───────────────────────────────────────────── */
+
+#disk {
+  border: 2px solid @secondary;
+  color: @secondary;
 }
 
 /* ── Volume / Audio ─────────────────────────────────── */
@@ -250,6 +258,7 @@ window#waybar {
 
 #tray {
   padding: 0 8px;
+  background: @primary ;
 }
 
 #tray > .passive {
