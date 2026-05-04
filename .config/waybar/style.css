@@ -258,7 +258,8 @@ window#waybar {
 
 #tray {
   padding: 0 8px;
-  background: @primary ;
+  background: @background;
+  border:2px solid @primary;
 }
 
 #tray > .passive {
