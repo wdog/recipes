@@ -254,6 +254,18 @@ window#waybar {
   }
 }
 
+/* ── Layout ─────────────────────────────────────────── */
+
+#custom-layout {
+  background: @surface_container;
+  border: 2px solid @primary;
+  color: @primary;
+  padding: 0 10px;
+  margin: 4px 2px;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
 /* ── Tray ───────────────────────────────────────────── */
 
 #tray {

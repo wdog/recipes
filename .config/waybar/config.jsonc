@@ -22,6 +22,7 @@
         // "backlight",
         "network",
         "battery",
+        "custom/layout",
         "tray"
     ],
     // ── Left ──────────────────────────────────────
@@ -86,6 +87,11 @@
         }
     },
     // ── Center ────────────────────────────────────
+    "custom/layout": {
+        "interval": 2,
+        "exec": "hyprctl getoption general:layout | awk '/str:/{print $2}'",
+        "format": " {}"
+    },
     // ── Right ─────────────────────────────────────
     "custom/music": {
         "format": "{}",
